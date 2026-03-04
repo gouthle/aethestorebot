@@ -3,167 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aethe Premium Service</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
+        /* 1. ПЕРЕМЕННЫЕ И ОСНОВНЫЕ СТИЛИ 
+        */
         :root {
-            --accent: #FF8C00;
-            --bg: #000000;
-            --text: #ffffff;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --accent-color: #FF8C00; /* Titanium Orange */
+            --bg-dark: #000000;
+            --field-bg: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.5);
+            --transition-speed: 0.4s;
+            --curve: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* 2. АНИМАЦИИ 
+        */
+        @keyframes containerEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .container {
             width: 100%;
             max-width: 450px;
-            padding: 20px 25px 40px;
+            padding: 20px 25px 50px 25px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            animation: fadeIn 0.8s ease-out; /* Анимация появления всего экрана */
+            animation: containerEntrance 0.8s var(--curve) forwards;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Переключатель языка */
-        .lang-switcher {
+        /* 3. ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА 
+        */
+        .language-header {
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            gap: 10px;
         }
 
-        .lang-btn {
+        .lang-node {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 15px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-speed) var(--curve);
+            text-transform: uppercase;
         }
 
-        .lang-btn.active {
-            background: var(--accent);
-            color: #000;
-            border-color: var(--accent);
-            transform: scale(1.05);
+        .lang-node.active {
+            background: var(--accent-color);
+            color: #000000;
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
 
-        /* Заголовок с анимацией текста */
-        .header { margin-bottom: 40px; }
-        .header h1 { 
-            font-size: 42px; 
-            font-weight: 900; 
-            margin: 0; 
-            color: var(--accent); 
-            text-transform: uppercase; 
+        /* 4. ШАПКА 
+        */
+        .brand-section {
+            margin-bottom: 45px;
+        }
+
+        .brand-section h1 {
+            font-size: 42px;
+            font-weight: 900;
+            margin: 0;
+            color: var(--accent-color);
             letter-spacing: -2px;
+            text-transform: uppercase;
         }
-        .header p { 
-            font-size: 12px; 
-            opacity: 0.5; 
-            margin: 8px 0 0 0; 
-            text-transform: uppercase; 
+
+        .brand-section p {
+            font-size: 13px;
+            font-weight: 500;
+            margin: 10px 0 0 0;
+            color: var(--text-dim);
+            text-transform: uppercase;
             letter-spacing: 2px;
-            transition: var(--transition);
         }
 
-        /* Поля формы */
-        .form-group { 
-            margin-bottom: 32px; 
-            transition: var(--transition);
+        /* 5. ФОРМА И ПОЛЯ 
+        */
+        .input-wrapper {
+            margin-bottom: 35px;
+            position: relative;
         }
 
-        label { 
-            display: block; 
-            font-size: 11px; 
-            font-weight: 700; 
-            color: var(--accent); 
-            text-transform: uppercase; 
-            letter-spacing: 1.2px; 
-            margin-bottom: 10px;
+        .input-wrapper label {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            transition: var(--transition-speed);
         }
-        
+
         input, select {
-            width: 100%; 
-            background: transparent; 
-            border: none; 
-            border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0; 
-            padding: 12px 0; 
-            color: #fff; 
-            font-size: 18px; 
-            outline: none; 
-            transition: var(--transition);
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            border-radius: 0;
+            padding: 12px 0;
+            color: #ffffff;
+            font-size: 18px;
+            outline: none;
+            transition: var(--transition-speed) var(--curve);
+            box-sizing: border-box;
         }
 
-        input:focus, select:focus { 
-            border-bottom-color: var(--accent);
-            padding-left: 5px; /* Легкий сдвиг при фокусе */
+        input:focus {
+            border-bottom-color: var(--accent-color);
+            padding-left: 8px;
         }
 
-        /* Плавная смена текста */
-        .fade-text {
-            transition: opacity 0.3s ease;
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
         }
-        .fade-out { opacity: 0; }
 
-        .btn {
-            margin-top: auto; 
-            background: var(--accent); 
-            color: #000; 
-            border: none; 
+        /* Стилизация локации */
+        .geo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .geo-btn {
+            background: var(--field-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .geo-btn:active {
+            border-color: var(--accent-color);
+            background: rgba(255, 140, 0, 0.1);
+        }
+
+        /* 6. КНОПКА ОТПРАВКИ 
+        */
+        .submit-trigger {
+            margin-top: auto;
+            background-color: var(--accent-color);
+            color: #000000;
+            border: none;
             border-radius: 20px;
-            padding: 22px; 
-            font-size: 17px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
+            padding: 22px;
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .btn:active { 
-            transform: scale(0.95);
+        .submit-trigger:active {
+            transform: scale(0.96);
             box-shadow: 0 5px 15px rgba(255, 140, 0, 0.1);
         }
 
-        select { appearance: none; -webkit-appearance: none; }
+        /* Эффекты затухания текста */
+        .text-anim {
+            transition: opacity 0.3s ease;
+        }
+        
+        .is-hidden {
+            opacity: 0;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="lang-switcher">
-            <button id="btn-ru" class="lang-btn" onclick="setLanguage('ru', this)">RU</button>
-            <button id="btn-en" class="lang-btn" onclick="setLanguage('en', this)">EN</button>
-            <button id="btn-pl" class="lang-btn" onclick="setLanguage('pl', this)">PL</button>
-        </div>
 
-        <div class="header">
+    <div class="container" id="main-app">
+        
+        <header class="language-header">
+            <button id="ru-selector" class="lang-node" onclick="updateLanguage('ru', this)">RU</button>
+            <button id="en-selector" class="lang-node" onclick="updateLanguage('en', this)">EN</button>
+            <button id="pl-selector" class="lang-node" onclick="updateLanguage('pl', this)">PL</button>
+        </header>
+
+        <section class="brand-section">
             <h1>Aethe</h1>
-            <p id="subtitle" class="fade-text">Premium Service</p>
-        </div>
+            <p id="ui-subtitle" class="text-anim">Premium Device Service</p>
+        </section>
 
-        <div class="form-group">
-            <label id="label-brand" class="fade-text">Device</label>
-            <select id="brand">
+        <div class="input-wrapper">
+            <label id="ui-label-brand" class="text-anim">Device</label>
+            <select id="field-brand">
                 <option value="iPhone">iPhone</option>
                 <option value="Samsung">Samsung</option>
                 <option value="Xiaomi">Xiaomi</option>
@@ -171,122 +238,160 @@
             </select>
         </div>
 
-        <div class="form-group">
-            <label id="label-model" class="fade-text">Model</label>
-            <input type="text" id="device" placeholder="...">
+        <div class="input-wrapper">
+            <label id="ui-label-model" class="text-anim">Model</label>
+            <input type="text" id="field-model" placeholder="...">
         </div>
 
-        <div class="form-group">
-            <label id="label-phone" class="fade-text">Contact Phone</label>
-            <input type="tel" id="phone" placeholder="+48 ___ ___ ___">
+        <div class="input-wrapper">
+            <label id="ui-label-phone" class="text-anim">Phone Number</label>
+            <input type="tel" id="field-phone" placeholder="+48 ___ ___ ___">
         </div>
 
-        <div class="form-group">
-            <label id="label-issue" class="fade-text">Issue</label>
-            <input type="text" id="problem" placeholder="...">
+        <div class="input-wrapper">
+            <label id="ui-label-geo" class="text-anim">Your Location</label>
+            <div class="geo-container">
+                <input type="text" id="field-location" placeholder="...">
+                <button class="geo-btn" onclick="fetchLocation()">
+                    <span style="font-size: 20px;">📍</span>
+                </button>
+            </div>
         </div>
 
-        <button class="btn fade-text" id="submit-btn" onclick="sendData()">Confirm Repair</button>
+        <div class="input-wrapper">
+            <label id="ui-label-issue" class="text-anim">Describe Problem</label>
+            <input type="text" id="field-problem" placeholder="...">
+        </div>
+
+        <button class="submit-trigger text-anim" id="ui-button-text" onclick="submitApplication()">
+            Confirm Order
+        </button>
+
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.setHeaderColor('#000000');
+        // Инициализация Telegram WebApp
+        const webapp = window.Telegram.WebApp;
+        webapp.expand();
+        webapp.setHeaderColor('#000000');
+        webapp.setBackgroundColor('#000000');
 
-        const translations = {
+        // Словарь переводов
+        const langData = {
             ru: {
                 subtitle: "Премиальный сервис",
-                brand: "Устройство",
-                model: "Модель",
-                model_ph: "Напр: 17 Pro, 1ТБ",
-                phone: "Контактный телефон",
-                issue: "Что случилось?",
-                issue_ph: "Опишите проблему",
-                submit: "Подтвердить запись"
+                brand: "Тип устройства",
+                model: "Модель и память",
+                model_ph: "Напр: 17 Pro, 256GB",
+                phone: "Ваш телефон",
+                geo: "Адрес / Локация",
+                issue: "Что сломалось?",
+                issue_ph: "Напр: замена экрана",
+                submit: "Оформить заявку"
             },
             en: {
-                subtitle: "Premium Service",
-                brand: "Device",
-                model: "Model",
-                model_ph: "e.g. 17 Pro, 1TB",
-                phone: "Contact Phone",
-                issue: "What happened?",
-                issue_ph: "Describe the issue",
-                submit: "Confirm Booking"
+                subtitle: "Premium Device Service",
+                brand: "Device Type",
+                model: "Model & Memory",
+                model_ph: "e.g. 17 Pro, 256GB",
+                phone: "Phone Number",
+                geo: "Address / Location",
+                issue: "Describe Problem",
+                issue_ph: "e.g. Screen replacement",
+                submit: "Confirm Order"
             },
             pl: {
-                subtitle: "Serwis Premium",
-                brand: "Urządzenie",
-                model: "Model",
-                model_ph: "np. 17 Pro, 1TB",
+                subtitle: "Serwis Urządzeń Premium",
+                brand: "Typ urządzenia",
+                model: "Model и Pamięć",
+                model_ph: "np. 17 Pro, 256GB",
                 phone: "Numer telefonu",
-                issue: "Co się stało?",
-                issue_ph: "Opisz problem",
-                submit: "Potwierdź naprawę"
+                geo: "Adres / Lokalizacja",
+                issue: "Co jest zepsute?",
+                issue_ph: "np. wymiana ekranu",
+                submit: "Złóż zamówienie"
             }
         };
 
-        function setLanguage(lang, btn) {
-            // Сохраняем
-            localStorage.setItem('aethe_lang', lang);
-            
-            // Анимация затухания текста перед сменой
-            const elements = document.querySelectorAll('.fade-text');
-            elements.forEach(el => el.classList.add('fade-out'));
+        // Смена языка
+        function updateLanguage(lang, btnElement) {
+            localStorage.setItem('pref_lang', lang);
+
+            const animElements = document.querySelectorAll('.text-anim');
+            animElements.forEach(el => el.classList.add('is-hidden'));
 
             setTimeout(() => {
-                // Меняем кнопки
-                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                if(btn) btn.classList.add('active');
-                else document.getElementById('btn-' + lang).classList.add('active');
+                // Подсветка кнопок
+                document.querySelectorAll('.lang-node').forEach(b => b.classList.remove('active'));
+                if (btnElement) {
+                    btnElement.classList.add('active');
+                } else {
+                    document.getElementById(lang + '-selector').classList.add('active');
+                }
 
-                // Меняем тексты
-                const t = translations[lang];
-                document.getElementById('subtitle').innerText = t.subtitle;
-                document.getElementById('label-brand').innerText = t.brand;
-                document.getElementById('label-model').innerText = t.model;
-                document.getElementById('device').placeholder = t.model_ph;
-                document.getElementById('label-phone').innerText = t.phone;
-                document.getElementById('label-issue').innerText = t.issue;
-                document.getElementById('problem').placeholder = t.issue_ph;
-                document.getElementById('submit-btn').innerText = t.submit;
+                // Обновление контента
+                const t = langData[lang];
+                document.getElementById('ui-subtitle').innerText = t.subtitle;
+                document.getElementById('ui-label-brand').innerText = t.brand;
+                document.getElementById('ui-label-model').innerText = t.model;
+                document.getElementById('field-model').placeholder = t.model_ph;
+                document.getElementById('ui-label-phone').innerText = t.phone;
+                document.getElementById('ui-label-geo').innerText = t.geo;
+                document.getElementById('ui-label-issue').innerText = t.issue;
+                document.getElementById('field-problem').placeholder = t.issue_ph;
+                document.getElementById('ui-button-text').innerText = t.submit;
 
-                // Возвращаем видимость
-                elements.forEach(el => el.classList.remove('fade-out'));
+                animElements.forEach(el => el.classList.remove('is-hidden'));
             }, 300);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('aethe_lang');
-            const tgLang = tg.initDataUnsafe.user?.language_code;
-
-            if (savedLang && translations[savedLang]) {
-                setLanguage(savedLang);
-            } else if (tgLang && translations[tgLang]) {
-                setLanguage(tgLang);
-            } else {
-                setLanguage('ru');
+        // Получение геолокации
+        function fetchLocation() {
+            if (navigator.geolocation) {
+                webapp.HapticFeedback.impactOccurred('light');
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const coords = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    document.getElementById('field-location').value = "📍 " + coords;
+                }, (err) => {
+                    webapp.showAlert("Доступ к геопозиции отклонен");
+                });
             }
-        });
+        }
 
-        function sendData() {
-            const data = {
-                brand: document.getElementById('brand').value,
-                device: document.getElementById('device').value,
-                phone: document.getElementById('phone').value,
-                problem: document.getElementById('problem').value
+        // Отправка данных
+        function submitApplication() {
+            const payload = {
+                brand: document.getElementById('field-brand').value,
+                device: document.getElementById('field-model').value,
+                phone: document.getElementById('field-phone').value,
+                location: document.getElementById('field-location').value,
+                problem: document.getElementById('field-problem').value
             };
-            
-            if (!data.device || !data.phone) {
-                tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert("Fill in the fields!");
+
+            if (!payload.device || !payload.phone) {
+                webapp.HapticFeedback.notificationOccurred('error');
+                webapp.showAlert("Пожалуйста, заполните модель и телефон!");
                 return;
             }
 
-            tg.HapticFeedback.impactOccurred('heavy');
-            tg.sendData(JSON.stringify(data));
+            webapp.HapticFeedback.impactOccurred('heavy');
+            webapp.sendData(JSON.stringify(payload));
         }
+
+        // Авто-выбор при старте
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('pref_lang');
+            const tgLang = webapp.initDataUnsafe.user?.language_code;
+            
+            if (saved && langData[saved]) {
+                updateLanguage(saved);
+            } else if (tgLang && langData[tgLang]) {
+                updateLanguage(tgLang);
+            } else {
+                updateLanguage('ru');
+            }
+        });
+
     </script>
 </body>
 </html>
