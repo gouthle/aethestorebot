@@ -6,164 +6,143 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --accent-color: #FF8C00; /* Насыщенный оранжевый Titanium */
-            --bg-color: #000000;
-            --secondary-bg: #121212;
-            --text-main: #ffffff;
-            --text-hint: rgba(255, 255, 255, 0.5);
+            --accent: #FF8C00; /* Titanium Orange */
+            --bg: #000000;
+            --field-bg: #121212;
+            --text: #ffffff;
         }
 
         body {
             font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        .wrapper {
+        .container {
             width: 100%;
-            max-width: 420px;
-            padding: 40px 24px;
+            max-width: 450px; /* Для Мака */
+            padding: 40px 25px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            box-sizing: border-box;
+            min-height: 100vh;
         }
 
-        .header {
-            margin-bottom: 40px;
-        }
-
+        .header { margin-bottom: 45px; }
+        
         .header h1 {
-            font-size: 34px;
+            font-size: 38px;
             font-weight: 800;
             margin: 0;
             letter-spacing: -1.5px;
-            color: var(--accent-color);
+            color: var(--accent);
             text-transform: uppercase;
         }
 
         .header p {
             font-size: 13px;
-            font-weight: 500;
-            color: var(--text-hint);
-            margin: 8px 0 0 0;
+            opacity: 0.5;
+            margin: 10px 0 0 0;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        .form-item {
-            margin-bottom: 32px;
-        }
+        .form-group { margin-bottom: 35px; }
 
         label {
             display: block;
             font-size: 11px;
             font-weight: 700;
-            margin-bottom: 8px;
+            color: var(--accent);
             text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--accent-color);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
         }
 
         input, select {
             width: 100%;
-            padding: 14px 0;
             background: transparent;
             border: none;
-            border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 0;
-            color: var(--text-main);
-            font-size: 18px;
+            padding: 12px 0;
+            color: #fff;
+            font-size: 18px; /* Крупный текст для телефона */
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: border-color 0.3s ease;
         }
 
         input:focus, select:focus {
-            border-bottom-color: var(--accent-color);
+            border-bottom-color: var(--accent);
         }
 
-        ::placeholder {
-            color: rgba(255, 255, 255, 0.2);
-        }
+        ::placeholder { color: rgba(255, 255, 255, 0.2); }
 
-        .main-button {
-            margin-top: 20px;
-            background-color: var(--accent-color);
-            color: #000000; /* Черный текст на оранжевом фоне лучше читается */
+        .btn {
+            margin-top: auto; /* Кнопка всегда внизу */
+            background: var(--accent);
+            color: #000;
             border: none;
-            border-radius: 14px;
-            padding: 20px;
-            font-size: 17px;
+            border-radius: 18px;
+            padding: 22px;
+            font-size: 18px;
             font-weight: 800;
-            width: 100%;
-            cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.2);
-            transition: all 0.2s ease;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
         }
 
-        .main-button:active {
-            transform: scale(0.96);
-            background-color: #e67e00;
-        }
+        .btn:active { transform: scale(0.97); opacity: 0.9; }
 
-        /* Убираем стрелочку селекта для чистоты */
-        select {
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23FF8C00'%3E%3Cpath d='M2 4l4 4 4-4H2z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right center;
-        }
+        /* Чистим селект */
+        select { appearance: none; -webkit-appearance: none; }
     </style>
 </head>
 <body>
-    <div class="wrapper">
+    <div class="container">
         <div class="header">
             <h1>Aethe</h1>
-            <p>Premium Service Center</p>
+            <p>Titanium Service</p>
         </div>
 
-        <div class="form-item">
+        <div class="form-group">
             <label>Device</label>
             <select id="brand">
                 <option value="iPhone">iPhone</option>
                 <option value="Samsung">Samsung</option>
-                <option value="Xiaomi">Xiaomi</option>
-                <option value="Другое">Other Device</option>
+                <option value="Other">Other Device</option>
             </select>
         </div>
 
-        <div class="form-item">
+        <div class="form-group">
             <label>Model</label>
-            <input type="text" id="device" placeholder="e.g. 17 Pro Max, 512GB">
+            <input type="text" id="device" placeholder="e.g. 17 Pro, 1TB">
         </div>
 
-        <div class="form-item">
+        <div class="form-group">
             <label>Contact Phone</label>
             <input type="tel" id="phone" placeholder="+48 ___ ___ ___">
         </div>
 
-        <div class="form-item">
-            <label>Issue Description</label>
-            <input type="text" id="problem" placeholder="What needs to be fixed?">
+        <div class="form-group">
+            <label>What happened?</label>
+            <input type="text" id="problem" placeholder="Describe the issue">
         </div>
 
-        <button class="main-button" onclick="sendData()">Confirm Booking</button>
+        <button class="btn" onclick="sendData()">Confirm Repair</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-
-        // Настройка цветов темы Telegram под наш дизайн
+        // Красим верхнюю панель в черный
         tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
 
         function sendData() {
             const data = {
@@ -174,11 +153,8 @@
             };
             
             if (!data.device || !data.phone) {
-                tg.showPopup({
-                    title: 'Error',
-                    message: 'Please fill in model and phone fields',
-                    buttons: [{type: 'ok', color: '#FF8C00'}]
-                });
+                tg.HapticFeedback.notificationOccurred('error');
+                alert("Please fill in the model and phone!");
                 return;
             }
 
