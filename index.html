@@ -73,7 +73,7 @@
             border-color: var(--accent-color);
         }
 
-        /* --- ЗАГОЛОВОК С АНИМАЦИЕЙ ПЕЧАТИ --- */
+        /* --- ЗАГОЛОВОК С ЦИКЛИЧНОЙ ПЕЧАТЬЮ --- */
         .header-section {
             margin-bottom: 40px;
         }
@@ -277,32 +277,49 @@
             }
         };
 
-        // Анимация печатающегося текста
+        // Анимация печатающегося текста (AETHE <-> SERVICE)
         function runTypewriter() {
-            const text = "AETHE";
+            const words = ["AETHE", "SERVICE"];
             const container = document.getElementById('text-node');
-            let i = 0;
-            container.innerHTML = "";
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typeSpeed = 250; // Медленная печать
 
             function type() {
-                if (i < text.length) {
-                    container.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, 150);
+                const currentWord = words[wordIndex];
+                
+                if (isDeleting) {
+                    container.innerHTML = currentWord.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeSpeed = 100; // Стирание быстрее
+                } else {
+                    container.innerHTML = currentWord.substring(0, charIndex + 1);
+                    charIndex++;
+                    typeSpeed = 250; // Печать медленнее
                 }
+
+                if (!isDeleting && charIndex === currentWord.length) {
+                    isDeleting = true;
+                    typeSpeed = 2000; // Пауза на дочитаться
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % words.length;
+                    typeSpeed = 500;
+                }
+
+                setTimeout(type, typeSpeed);
             }
-            setTimeout(type, 400);
+            type();
         }
 
         // Смена языка
         function setLanguage(lang) {
             localStorage.setItem('aethe_lang', lang);
             
-            // Визуальное переключение кнопок
             document.querySelectorAll('.lang-button').forEach(b => b.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
 
-            // Анимация затухания текста
             const targets = document.querySelectorAll('.fade-text');
             targets.forEach(t => t.classList.add('hidden'));
 
@@ -323,7 +340,7 @@
             }, 300);
         }
 
-        // Получение геолокации
+        // Геолокация
         function getLocation() {
             if (navigator.geolocation) {
                 tg.HapticFeedback.impactOccurred('medium');
@@ -337,7 +354,7 @@
             }
         }
 
-        // Отправка данных боту
+        // Отправка данных
         function sendDataToBot() {
             const data = {
                 brand: document.getElementById('inp-brand').value,
@@ -357,7 +374,7 @@
             tg.sendData(JSON.stringify(data));
         }
 
-        // Инициализация при загрузке
+        // Инициализация
         window.addEventListener('DOMContentLoaded', () => {
             runTypewriter();
             const savedLang = localStorage.getItem('aethe_lang') || 'en';
