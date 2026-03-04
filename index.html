@@ -6,7 +6,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --accent: #FF8C00;
+            --accent: #FF8C00; /* Titanium Orange */
             --bg: #000000;
             --text: #ffffff;
         }
@@ -19,6 +19,7 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -34,19 +35,20 @@
         .lang-switcher {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 30px;
         }
 
         .lang-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #fff;
-            padding: 5px 10px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 10px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
+            transition: 0.2s;
         }
 
         .lang-btn.active {
@@ -55,34 +57,51 @@
         }
 
         .header { margin-bottom: 40px; }
-        .header h1 { font-size: 38px; font-weight: 800; margin: 0; color: var(--accent); text-transform: uppercase; }
-        .header p { font-size: 13px; opacity: 0.5; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2px; }
+        .header h1 { font-size: 38px; font-weight: 800; margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: -1.5px; }
+        .header p { font-size: 12px; opacity: 0.5; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2px; }
 
-        .form-group { margin-bottom: 30px; }
-        label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+        .form-group { margin-bottom: 32px; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
         
         input, select {
-            width: 100%; background: transparent; border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0; padding: 12px 0; color: #fff; font-size: 18px; outline: none;
+            width: 100%; background: transparent; border: none; border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0; padding: 12px 0; color: #fff; font-size: 18px; outline: none; transition: 0.3s;
         }
 
+        input:focus, select:focus { border-bottom-color: var(--accent); }
+
         .btn {
-            margin-top: auto; background: var(--accent); color: #000; border: none; border-radius: 18px;
-            padding: 22px; font-size: 18px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+            margin-top: auto; 
+            background: var(--accent); 
+            color: #000; 
+            border: none; 
+            border-radius: 18px;
+            padding: 20px; 
+            font-size: 17px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.2);
+            transition: 0.2s;
         }
+
+        .btn:active { transform: scale(0.97); }
+
+        /* Чистый вид селекта */
+        select { appearance: none; -webkit-appearance: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="lang-switcher">
-            <button class="lang-btn active" onclick="changeLang('ru', this)">RU</button>
-            <button class="lang-btn" onclick="changeLang('en', this)">EN</button>
-            <button class="lang-btn" onclick="changeLang('pl', this)">PL</button>
+            <button id="btn-ru" class="lang-btn" onclick="changeLang('ru', this)">RU</button>
+            <button id="btn-en" class="lang-btn" onclick="changeLang('en', this)">EN</button>
+            <button id="btn-pl" class="lang-btn" onclick="changeLang('pl', this)">PL</button>
         </div>
 
         <div class="header">
             <h1 id="title">Aethe</h1>
-            <p id="subtitle">Titanium Service</p>
+            <p id="subtitle">Premium Service</p>
         </div>
 
         <div class="form-group">
@@ -90,13 +109,14 @@
             <select id="brand">
                 <option value="iPhone">iPhone</option>
                 <option value="Samsung">Samsung</option>
-                <option value="Other">Other Device</option>
+                <option value="Xiaomi">Xiaomi</option>
+                <option value="Other">Other</option>
             </select>
         </div>
 
         <div class="form-group">
             <label id="label-model">Model</label>
-            <input type="text" id="device" placeholder="e.g. 17 Pro, 1TB">
+            <input type="text" id="device" placeholder="...">
         </div>
 
         <div class="form-group">
@@ -105,7 +125,7 @@
         </div>
 
         <div class="form-group">
-            <label id="label-issue">What happened?</label>
+            <label id="label-issue">Issue Description</label>
             <input type="text" id="problem" placeholder="...">
         </div>
 
@@ -129,7 +149,7 @@
                 submit: "Подтвердить запись"
             },
             en: {
-                subtitle: "Titanium Service",
+                subtitle: "Premium Service",
                 brand: "Device",
                 model: "Model",
                 model_ph: "e.g. 17 Pro, 1TB",
@@ -151,11 +171,9 @@
         };
 
         function changeLang(lang, btn) {
-            // Меняем активную кнопку
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if(btn) btn.classList.add('active');
 
-            // Обновляем тексты
             const t = translations[lang];
             document.getElementById('subtitle').innerText = t.subtitle;
             document.getElementById('label-brand').innerText = t.brand;
@@ -167,6 +185,18 @@
             document.getElementById('submit-btn').innerText = t.submit;
         }
 
+        // Автоопределение языка при загрузке
+        window.onload = function() {
+            const userLang = tg.initDataUnsafe.user?.language_code;
+            if (userLang === 'pl') {
+                changeLang('pl', document.getElementById('btn-pl'));
+            } else if (userLang === 'en') {
+                changeLang('en', document.getElementById('btn-en'));
+            } else {
+                changeLang('ru', document.getElementById('btn-ru'));
+            }
+        };
+
         function sendData() {
             const data = {
                 brand: document.getElementById('brand').value,
@@ -176,9 +206,14 @@
             };
             
             if (!data.device || !data.phone) {
+                // Вибрация ошибки
+                tg.HapticFeedback.notificationOccurred('error');
                 tg.showAlert("Please fill in the fields!");
                 return;
             }
+
+            // Легкая вибрация успеха
+            tg.HapticFeedback.impactOccurred('medium');
             tg.sendData(JSON.stringify(data));
         }
     </script>
