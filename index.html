@@ -6,9 +6,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --accent: #FF8C00; /* Titanium Orange */
+            --accent: #FF8C00;
             --bg: #000000;
-            --field-bg: #121212;
             --text: #ffffff;
         }
 
@@ -17,102 +16,77 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
-            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 450px; /* Для Мака */
-            padding: 40px 25px;
-            box-sizing: border-box;
+            max-width: 450px;
+            padding: 20px 25px 40px;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        .header { margin-bottom: 45px; }
-        
-        .header h1 {
-            font-size: 38px;
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -1.5px;
-            color: var(--accent);
-            text-transform: uppercase;
+        /* Кнопки переключения языка */
+        .lang-switcher {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .header p {
-            font-size: 13px;
-            opacity: 0.5;
-            margin: 10px 0 0 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .form-group { margin-bottom: 35px; }
-
-        label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 12px;
-        }
-
-        input, select {
-            width: 100%;
-            background: transparent;
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0;
-            padding: 12px 0;
             color: #fff;
-            font-size: 18px; /* Крупный текст для телефона */
-            outline: none;
-            transition: border-color 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        input:focus, select:focus {
-            border-bottom-color: var(--accent);
-        }
-
-        ::placeholder { color: rgba(255, 255, 255, 0.2); }
-
-        .btn {
-            margin-top: auto; /* Кнопка всегда внизу */
+        .lang-btn.active {
             background: var(--accent);
             color: #000;
-            border: none;
-            border-radius: 18px;
-            padding: 22px;
-            font-size: 18px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.2);
         }
 
-        .btn:active { transform: scale(0.97); opacity: 0.9; }
+        .header { margin-bottom: 40px; }
+        .header h1 { font-size: 38px; font-weight: 800; margin: 0; color: var(--accent); text-transform: uppercase; }
+        .header p { font-size: 13px; opacity: 0.5; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Чистим селект */
-        select { appearance: none; -webkit-appearance: none; }
+        .form-group { margin-bottom: 30px; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+        
+        input, select {
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0; padding: 12px 0; color: #fff; font-size: 18px; outline: none;
+        }
+
+        .btn {
+            margin-top: auto; background: var(--accent); color: #000; border: none; border-radius: 18px;
+            padding: 22px; font-size: 18px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="lang-switcher">
+            <button class="lang-btn active" onclick="changeLang('ru', this)">RU</button>
+            <button class="lang-btn" onclick="changeLang('en', this)">EN</button>
+            <button class="lang-btn" onclick="changeLang('pl', this)">PL</button>
+        </div>
+
         <div class="header">
-            <h1>Aethe</h1>
-            <p>Titanium Service</p>
+            <h1 id="title">Aethe</h1>
+            <p id="subtitle">Titanium Service</p>
         </div>
 
         <div class="form-group">
-            <label>Device</label>
+            <label id="label-brand">Device</label>
             <select id="brand">
                 <option value="iPhone">iPhone</option>
                 <option value="Samsung">Samsung</option>
@@ -121,28 +95,77 @@
         </div>
 
         <div class="form-group">
-            <label>Model</label>
+            <label id="label-model">Model</label>
             <input type="text" id="device" placeholder="e.g. 17 Pro, 1TB">
         </div>
 
         <div class="form-group">
-            <label>Contact Phone</label>
+            <label id="label-phone">Contact Phone</label>
             <input type="tel" id="phone" placeholder="+48 ___ ___ ___">
         </div>
 
         <div class="form-group">
-            <label>What happened?</label>
-            <input type="text" id="problem" placeholder="Describe the issue">
+            <label id="label-issue">What happened?</label>
+            <input type="text" id="problem" placeholder="...">
         </div>
 
-        <button class="btn" onclick="sendData()">Confirm Repair</button>
+        <button class="btn" id="submit-btn" onclick="sendData()">Confirm Repair</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        // Красим верхнюю панель в черный
         tg.setHeaderColor('#000000');
+
+        const translations = {
+            ru: {
+                subtitle: "Премиальный сервис",
+                brand: "Устройство",
+                model: "Модель",
+                model_ph: "Напр: 17 Pro, 1ТБ",
+                phone: "Контактный телефон",
+                issue: "Что случилось?",
+                issue_ph: "Опишите проблему",
+                submit: "Подтвердить запись"
+            },
+            en: {
+                subtitle: "Titanium Service",
+                brand: "Device",
+                model: "Model",
+                model_ph: "e.g. 17 Pro, 1TB",
+                phone: "Contact Phone",
+                issue: "What happened?",
+                issue_ph: "Describe the issue",
+                submit: "Confirm Booking"
+            },
+            pl: {
+                subtitle: "Serwis Premium",
+                brand: "Urządzenie",
+                model: "Model",
+                model_ph: "np. 17 Pro, 1TB",
+                phone: "Numer telefonu",
+                issue: "Co się stało?",
+                issue_ph: "Opisz problem",
+                submit: "Potwierdź naprawę"
+            }
+        };
+
+        function changeLang(lang, btn) {
+            // Меняем активную кнопку
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Обновляем тексты
+            const t = translations[lang];
+            document.getElementById('subtitle').innerText = t.subtitle;
+            document.getElementById('label-brand').innerText = t.brand;
+            document.getElementById('label-model').innerText = t.model;
+            document.getElementById('device').placeholder = t.model_ph;
+            document.getElementById('label-phone').innerText = t.phone;
+            document.getElementById('label-issue').innerText = t.issue;
+            document.getElementById('problem').placeholder = t.issue_ph;
+            document.getElementById('submit-btn').innerText = t.submit;
+        }
 
         function sendData() {
             const data = {
@@ -153,11 +176,9 @@
             };
             
             if (!data.device || !data.phone) {
-                tg.HapticFeedback.notificationOccurred('error');
-                alert("Please fill in the model and phone!");
+                tg.showAlert("Please fill in the fields!");
                 return;
             }
-
             tg.sendData(JSON.stringify(data));
         }
     </script>
