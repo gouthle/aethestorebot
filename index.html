@@ -8,7 +8,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* --- ПЕРЕМЕННЫЕ ЦВЕТОВ (Titanium Orange Style) --- */
         :root {
             --accent-color: #FF8C00; 
             --bg-color: #000000;
@@ -18,7 +17,6 @@
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* --- ОБЩИЕ СТИЛИ --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
@@ -28,8 +26,33 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- АНИМИРОВАННЫЙ ФОН --- */
+        .bg-blobs {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+
+        .blob {
+            position: absolute;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-1 { width: 300px; height: 300px; top: -100px; right: -50px; animation-duration: 25s; }
+        .blob-2 { width: 250px; height: 250px; bottom: -50px; left: -100px; animation-duration: 30s; opacity: 0.6; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, 100px) scale(1.2); }
         }
 
         .container {
@@ -39,15 +62,10 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            animation: fadeIn 0.8s ease forwards;
+            z-index: 1;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА --- */
+        /* --- ЯЗЫК --- */
         .language-container {
             display: flex;
             justify-content: flex-end;
@@ -64,7 +82,7 @@
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
-            transition: var(--transition);
+            backdrop-filter: blur(10px);
         }
 
         .lang-button.active {
@@ -73,13 +91,11 @@
             border-color: var(--accent-color);
         }
 
-        /* --- ЗАГОЛОВОК С ЦИКЛИЧНОЙ АНИМАЦИЕЙ ПЕЧАТИ --- */
-        .header-section {
-            margin-bottom: 40px;
-        }
+        /* --- ПЕЧАТЬ --- */
+        .header-section { margin-bottom: 40px; }
 
         .header-section h1 {
-            font-size: 40px; /* Немного уменьшил, чтобы ключ влезал в строку на узких экранах */
+            font-size: 40px;
             font-weight: 900;
             margin: 0;
             color: var(--accent-color);
@@ -88,10 +104,8 @@
             min-height: 54px;
             display: flex;
             align-items: center;
-            white-space: nowrap;
         }
 
-        /* Мигающая палочка (курсор) */
         .cursor {
             display: inline-block;
             width: 3px;
@@ -114,10 +128,8 @@
             letter-spacing: 2px;
         }
 
-        /* --- ПОЛЯ ВВОДА --- */
-        .input-group {
-            margin-bottom: 25px;
-        }
+        /* --- ПОЛЯ --- */
+        .input-group { margin-bottom: 25px; }
 
         .input-group label {
             display: block;
@@ -134,24 +146,15 @@
             background: transparent;
             border: none;
             border-bottom: 1.5px solid var(--line-color);
-            border-radius: 0;
             padding: 12px 0;
             color: #ffffff;
             font-size: 17px;
             outline: none;
-            transition: var(--transition);
         }
 
-        input:focus {
-            border-bottom-color: var(--accent-color);
-        }
+        input:focus { border-bottom-color: var(--accent-color); }
 
-        /* Контейнер для локации с кнопкой */
-        .location-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+        .location-row { display: flex; gap: 10px; align-items: center; }
 
         .geo-btn {
             background: rgba(255, 255, 255, 0.07);
@@ -159,17 +162,9 @@
             color: white;
             padding: 10px;
             border-radius: 12px;
-            cursor: pointer;
             font-size: 18px;
-            transition: 0.3s;
         }
 
-        .geo-btn:active {
-            background: var(--accent-color);
-            transform: scale(0.9);
-        }
-
-        /* --- КНОПКА ОТПРАВКИ --- */
         .submit-btn {
             margin-top: 20px;
             background-color: var(--accent-color);
@@ -180,25 +175,19 @@
             font-size: 17px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .submit-btn:active {
-            transform: scale(0.97);
-            opacity: 0.9;
-        }
-
-        /* Эффект затухания текста при смене языка */
-        .fade-text {
-            transition: opacity 0.3s ease;
-        }
+        .fade-text { transition: opacity 0.3s ease; }
         .hidden { opacity: 0; }
-
     </style>
 </head>
 <body>
+
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
 
     <div class="container">
         
@@ -258,75 +247,47 @@
         tg.setHeaderColor('#000000');
 
         const translations = {
-            en: {
-                subtitle: "Premium Service", brand: "Device Brand", model: "Model & Memory",
-                model_ph: "e.g. 16 Pro, 256GB", phone: "Phone Number", geo: "Location / Address",
-                geo_ph: "Enter address or tap pin", issue: "Problem Description",
-                issue_ph: "What needs to be fixed?", submit: "Confirm Booking"
-            },
-            pl: {
-                subtitle: "Serwis Premium", brand: "Marka urządzenia", model: "Model i Pamięć",
-                model_ph: "np. 16 Pro, 256GB", phone: "Numer telefonu", geo: "Lokalizacja / Adres",
-                geo_ph: "Wpisz adres lub kliknij pinezkę", issue: "Opis problemu",
-                issue_ph: "Co należy naprawić?", submit: "Złóż zamówienie"
-            },
-            ru: {
-                subtitle: "Премиальный сервис", brand: "Бренд устройства", model: "Модель и Память",
-                model_ph: "напр. 16 Pro, 256ГБ", phone: "Номер телефона", geo: "Локация / Адрес",
-                geo_ph: "Введите адрес или нажмите на пин", issue: "Описание проблемы",
-                issue_ph: "Что нужно починить?", submit: "Подтвердить запись"
-            }
+            en: { subtitle: "Premium Service", brand: "Device Brand", model: "Model & Memory", model_ph: "e.g. 16 Pro, 256GB", phone: "Phone Number", geo: "Location / Address", geo_ph: "Enter address or tap pin", issue: "Problem Description", issue_ph: "What needs to be fixed?", submit: "Confirm Booking" },
+            pl: { subtitle: "Serwis Premium", brand: "Marka urządzenia", model: "Model i Pamięć", model_ph: "np. 16 Pro, 256GB", phone: "Numer telefonu", geo: "Lokalizacja / Adres", geo_ph: "Wpisz adres lub kliknij pinezkę", issue: "Opis problemu", issue_ph: "Co należy naprawić?", submit: "Złóż zamówienie" },
+            ru: { subtitle: "Премиальный сервис", brand: "Бренд устройства", model: "Модель и Память", model_ph: "напр. 16 Pro, 256ГБ", phone: "Номер телефона", geo: "Локация / Адрес", geo_ph: "Введите адрес или нажмите на пин", issue: "Описание проблемы", issue_ph: "Что нужно починить?", submit: "Подтвердить запись" }
         };
 
-        // Анимация печатающегося текста (AETHE <-> SERVICE 🔧)
         function runTypewriter() {
             const words = ["AETHE", "SERVICE ;)"];
             const container = document.getElementById('text-node');
-            let wordIndex = 0;
-            let charIndex = 0;
-            let isDeleting = false;
-            let typeSpeed = 350; // Еще медленнее для солидности
+            let wordIndex = 0, charIndex = 0, isDeleting = false, typeSpeed = 350;
 
             function type() {
                 const currentWord = words[wordIndex];
-                
                 if (isDeleting) {
-                    // При стирании проверяем, не стираем ли мы эмодзи (оно занимает 2 позиции)
-                    const sub = currentWord.substring(0, charIndex - 1);
-                    container.innerHTML = sub;
+                    container.innerHTML = currentWord.substring(0, charIndex - 1);
                     charIndex--;
-                    typeSpeed = 120; 
+                    typeSpeed = 120;
                 } else {
                     container.innerHTML = currentWord.substring(0, charIndex + 1);
                     charIndex++;
-                    typeSpeed = 350; 
+                    typeSpeed = 350;
                 }
 
                 if (!isDeleting && charIndex === currentWord.length) {
                     isDeleting = true;
-                    // Пауза на AETHE дольше (2.5 сек), на SERVICE (2 сек)
-                    typeSpeed = (wordIndex === 0) ? 2500 : 2000; 
+                    typeSpeed = (wordIndex === 0) ? 2500 : 2000;
                 } else if (isDeleting && charIndex === 0) {
                     isDeleting = false;
                     wordIndex = (wordIndex + 1) % words.length;
                     typeSpeed = 600;
                 }
-
                 setTimeout(type, typeSpeed);
             }
             type();
         }
 
-        // Смена языка
         function setLanguage(lang) {
             localStorage.setItem('aethe_lang', lang);
-            
             document.querySelectorAll('.lang-button').forEach(b => b.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
-
             const targets = document.querySelectorAll('.fade-text');
             targets.forEach(t => t.classList.add('hidden'));
-
             setTimeout(() => {
                 const t = translations[lang];
                 document.getElementById('app-subtitle').innerText = t.subtitle;
@@ -339,52 +300,35 @@
                 document.getElementById('lbl-issue').innerText = t.issue;
                 document.getElementById('inp-issue').placeholder = t.issue_ph;
                 document.getElementById('btn-submit').innerText = t.submit;
-                
                 targets.forEach(t => t.classList.remove('hidden'));
             }, 300);
         }
 
-        // Геолокация
         function getLocation() {
             if (navigator.geolocation) {
                 tg.HapticFeedback.impactOccurred('medium');
                 navigator.geolocation.getCurrentPosition((pos) => {
-                    const lat = pos.coords.latitude.toFixed(5);
-                    const lon = pos.coords.longitude.toFixed(5);
+                    const lat = pos.coords.latitude.toFixed(5), lon = pos.coords.longitude.toFixed(5);
                     document.getElementById('inp-location').value = `📍 ${lat}, ${lon}`;
-                }, () => {
-                    tg.showAlert("Location access denied.");
-                });
+                }, () => tg.showAlert("Location access denied."));
             }
         }
 
-        // Отправка данных
         function sendDataToBot() {
-            const data = {
-                brand: document.getElementById('inp-brand').value,
-                device: document.getElementById('inp-model').value,
-                phone: document.getElementById('inp-phone').value,
-                location: document.getElementById('inp-location').value,
-                problem: document.getElementById('inp-issue').value
-            };
-
+            const data = { brand: document.getElementById('inp-brand').value, device: document.getElementById('inp-model').value, phone: document.getElementById('inp-phone').value, location: document.getElementById('inp-location').value, problem: document.getElementById('inp-issue').value };
             if (!data.device || !data.phone) {
                 tg.HapticFeedback.notificationOccurred('error');
                 tg.showAlert("Please fill in the required fields!");
                 return;
             }
-
             tg.HapticFeedback.impactOccurred('heavy');
             tg.sendData(JSON.stringify(data));
         }
 
-        // Инициализация
         window.addEventListener('DOMContentLoaded', () => {
             runTypewriter();
-            const savedLang = localStorage.getItem('aethe_lang') || 'en';
-            setLanguage(savedLang);
+            setLanguage(localStorage.getItem('aethe_lang') || 'en');
         });
-
     </script>
 </body>
 </html>
