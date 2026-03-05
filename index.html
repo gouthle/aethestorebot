@@ -13,157 +13,172 @@
         :root {
             --accent-color: #FF8C00; 
             --bg-color: #000000;
-            --main-text: #ffffff;
-            --hint-text: rgba(255, 255, 255, 0.5);
-            --line-color: rgba(255, 255, 255, 0.15);
-            --transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --line-color: rgba(255, 255, 255, 0.12);
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
-            color: var(--main-text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
+            color: #fff;
+            margin: 0; padding: 0;
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+            overflow: hidden;
         }
 
-        /* --- БЛОБЫ --- */
-        .bg-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; filter: blur(80px); opacity: 0.4; }
-        .blob { position: absolute; background: var(--accent-color); border-radius: 50%; animation: move 20s infinite alternate; }
-        .blob-1 { width: 300px; height: 300px; top: -100px; right: -50px; }
-        .blob-2 { width: 250px; height: 250px; bottom: -50px; left: -100px; opacity: 0.6; }
-        @keyframes move { from { transform: translate(0, 0) scale(1); } to { transform: translate(50px, 100px) scale(1.2); } }
+        /* Анимированный фон */
+        .bg-blobs { position: fixed; width: 100%; height: 100%; z-index: -1; filter: blur(80px); opacity: 0.35; pointer-events: none; }
+        .blob { position: absolute; background: var(--accent-color); border-radius: 50%; animation: move 18s infinite alternate; }
+        .blob-1 { width: 350px; height: 350px; top: -100px; right: -50px; }
+        .blob-2 { width: 250px; height: 250px; bottom: -50px; left: -80px; }
+        @keyframes move { from { transform: translate(0,0) scale(1); } to { transform: translate(40px, 80px) scale(1.1); } }
 
-        /* --- SKELETON --- */
-        .skeleton { background: rgba(255, 255, 255, 0.05); border-radius: 12px; position: relative; overflow: hidden; }
-        .skeleton::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent); animation: skeleton-load 1.5s infinite; }
-        @keyframes skeleton-load { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .container { 
+            width: 100%; max-width: 450px; height: 100vh; 
+            margin: 0 auto; padding: 25px; 
+            display: flex; flex-direction: column; 
+            box-sizing: border-box; z-index: 1;
+        }
 
-        .container { width: 100%; max-width: 450px; padding: 20px 25px 50px 25px; display: flex; flex-direction: column; box-sizing: border-box; z-index: 1; transition: var(--transition); }
+        /* Прогресс-бар */
+        .progress-container { height: 4px; background: var(--line-color); border-radius: 2px; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: var(--accent-color); width: 33%; transition: var(--transition); box-shadow: 0 0 12px var(--accent-color); }
 
-        /* --- UI ELEMENTS --- */
-        .language-container { display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 8px; }
-        .lang-button { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line-color); color: var(--main-text); padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; backdrop-filter: blur(10px); }
-        .lang-button.active { background: var(--accent-color); color: #000000; border-color: var(--accent-color); }
+        /* Шапка с выбором языка */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .lang-btn { background: var(--card-bg); border: 1px solid var(--line-color); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; margin-left: 5px; }
+        .lang-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
 
-        .header-section { margin-bottom: 40px; }
-        .header-section h1 { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 800; margin: 0; color: var(--accent-color); min-height: 40px; }
-        .cursor { display: inline-block; width: 3px; height: 25px; background-color: var(--accent-color); margin-left: 5px; animation: blink 0.7s infinite; }
+        .typewriter-section h1 { font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 800; color: var(--accent-color); margin: 0; }
+        .cursor { display: inline-block; width: 3px; height: 24px; background: var(--accent-color); margin-left: 5px; animation: blink 0.8s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        .input-group { margin-bottom: 25px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
-        
-        input, select { width: 100%; background: transparent; border: none; border-bottom: 1.5px solid var(--line-color); padding: 12px 0; color: #ffffff; font-size: 16px; outline: none; border-radius: 0; }
-        input:focus { border-bottom-color: var(--accent-color); }
+        /* Шаги формы */
+        .step { display: none; }
+        .step.active { display: block; animation: slideIn 0.5s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* ФИКС КНОПКИ ГЕО */
-        .location-row { position: relative; display: flex; align-items: center; }
-        .location-row input { padding-right: 45px; } /* Место под кнопку */
-        .geo-btn { position: absolute; right: 0; bottom: 8px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--line-color); color: white; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; backdrop-filter: blur(5px); }
+        label { display: block; font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; }
 
-        .submit-btn { margin-top: 20px; background-color: var(--accent-color); color: #000000; border: none; border-radius: 18px; padding: 20px; font-size: 17px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        /* Карточки Брендов */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { 
+            background: var(--card-bg); border: 1px solid var(--line-color); 
+            padding: 22px 10px; border-radius: 18px; text-align: center; 
+            font-weight: 700; transition: 0.3s; cursor: pointer;
+        }
+        .card.selected { border-color: var(--accent-color); background: rgba(255, 140, 0, 0.15); box-shadow: 0 0 15px rgba(255, 140, 0, 0.1); }
 
-        /* SUCCESS SCREEN */
-        #success-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); flex-direction: column; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.8s ease; }
-        #lottie-check { width: 180px; height: 180px; }
-        #success-text { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 800; color: var(--accent-color); text-align: center; margin-top: 15px; padding: 0 20px; }
+        /* Поля ввода */
+        input { 
+            width: 100%; background: var(--card-bg); border: 1px solid var(--line-color); 
+            padding: 16px; border-radius: 14px; color: #fff; font-size: 16px; 
+            box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.08); }
 
-        .hidden { opacity: 0; pointer-events: none; }
+        /* Теги проблем */
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .tag { background: var(--line-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        /* Кнопки навигации */
+        .btn-row { margin-top: auto; display: flex; gap: 12px; padding: 20px 0; }
+        .nav-btn { 
+            flex: 1; padding: 20px; border-radius: 18px; border: none; 
+            font-size: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+        }
+        .primary { background: var(--accent-color); color: #000; }
+        .secondary { background: var(--line-color); color: #fff; }
+
+        /* Успех */
+        #success-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+        #success-text { font-family: 'JetBrains Mono', monospace; color: var(--accent-color); text-align: center; margin-top: 20px; padding: 0 30px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
 
-    <div id="skeleton-screen" class="container">
-        <div class="skeleton" style="height: 30px; width: 100px; align-self: flex-end; margin-bottom: 20px;"></div>
-        <div class="skeleton" style="height: 50px; width: 70%; margin-bottom: 40px;"></div>
-        <div class="skeleton" style="height: 45px; margin-bottom: 25px;"></div>
-        <div class="skeleton" style="height: 45px; margin-bottom: 25px;"></div>
-        <div class="skeleton" style="height: 60px; border-radius: 18px;"></div>
-    </div>
-
-    <div class="container" id="main-app" style="opacity: 0; display: none;">
-        <div class="language-container">
-            <button id="lang-en" class="lang-button" onclick="setLanguage('en')">EN</button>
-            <button id="lang-pl" class="lang-button" onclick="setLanguage('pl')">PL</button>
-            <button id="lang-ru" class="lang-button" onclick="setLanguage('ru')">RU</button>
-        </div>
-
-        <div class="header-section">
-            <h1><span id="text-node"></span><span class="cursor"></span></h1>
-            <p id="app-subtitle">Premium Service</p>
-        </div>
-
-        <div class="input-group">
-            <label id="lbl-brand">Device Brand</label>
-            <select id="inp-brand">
-                <option value="iPhone">iPhone</option>
-                <option value="Samsung">Samsung</option>
-                <option value="Xiaomi">Xiaomi</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label id="lbl-model">Model & Memory</label>
-            <input type="text" id="inp-model" placeholder="e.g. 16 Pro, 256GB">
-        </div>
-
-        <div class="input-group">
-            <label id="lbl-phone">Phone Number</label>
-            <input type="tel" id="inp-phone" placeholder="+48 ___ ___ ___">
-        </div>
-
-        <div class="input-group">
-            <label id="lbl-geo">Location</label>
-            <div class="location-row">
-                <input type="text" id="inp-location" placeholder="Address or tap pin">
-                <button class="geo-btn" onclick="getLocation()">📍</button>
+    <div class="container" id="main-ui">
+        <div class="header">
+            <div class="typewriter-section">
+                <h1><span id="text-node"></span><span class="cursor"></span></h1>
+            </div>
+            <div class="lang-switcher">
+                <button id="lang-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
+                <button id="lang-pl" class="lang-btn" onclick="setLanguage('pl')">PL</button>
+                <button id="lang-ru" class="lang-btn" onclick="setLanguage('ru')">RU</button>
             </div>
         </div>
 
-        <div class="input-group">
-            <label id="lbl-issue">Problem Description</label>
-            <input type="text" id="inp-issue" placeholder="What to fix?">
+        <div class="progress-container"><div class="progress-fill" id="p-fill"></div></div>
+
+        <div class="step active" id="step1">
+            <label id="lbl-brand">Device Brand</label>
+            <div class="grid">
+                <div class="card selected" onclick="selectBrand('iPhone', this)">iPhone</div>
+                <div class="card" onclick="selectBrand('Samsung', this)">Samsung</div>
+                <div class="card" onclick="selectBrand('Xiaomi', this)">Xiaomi</div>
+                <div class="card" onclick="selectBrand('Other', this)">Other</div>
+            </div>
         </div>
 
-        <button class="submit-btn" id="btn-submit" onclick="sendDataToBot()">Confirm Booking</button>
+        <div class="step" id="step2">
+            <label id="lbl-model">Model & Details</label>
+            <input type="text" id="inp-model" placeholder="e.g. 15 Pro, 256GB">
+            
+            <label id="lbl-issue">What happened?</label>
+            <input type="text" id="inp-issue" placeholder="Describe the problem">
+            <div class="tags">
+                <div class="tag" onclick="setIssue('Screen 📱')">Screen 📱</div>
+                <div class="tag" onclick="setIssue('Battery 🔋')">Battery 🔋</div>
+                <div class="tag" onclick="setIssue('Water 💧')">Water 💧</div>
+            </div>
+        </div>
+
+        <div class="step" id="step3">
+            <label id="lbl-phone">Contact Phone</label>
+            <input type="tel" id="inp-phone" placeholder="+48 ___ ___ ___">
+            
+            <label id="lbl-loc">Your Location</label>
+            <input type="text" id="inp-loc" placeholder="Address or District">
+        </div>
+
+        <div class="btn-row">
+            <button class="nav-btn secondary" id="btn-back" onclick="prevStep()" style="display: none;">Back</button>
+            <button class="nav-btn primary" id="btn-next" onclick="nextStep()">Next</button>
+        </div>
     </div>
 
     <div id="success-screen">
-        <div id="lottie-check"></div>
+        <div id="lottie-check" style="width: 200px; height: 200px;"></div>
         <div id="success-text"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#000000');
+
+        let currentStep = 1;
+        let orderData = { brand: 'iPhone', device: '', phone: '', location: '', problem: '' };
 
         const translations = {
-            en: { subtitle: "Premium Service", brand: "Device Brand", model: "Model & Memory", model_ph: "e.g. 16 Pro, 256GB", phone: "Phone Number", geo: "Location", geo_ph: "Address or tap pin", issue: "Problem Description", issue_ph: "What to fix?", submit: "Confirm Booking", success: "BOOKING CONFIRMED<br>WE WILL CONTACT YOU SOON" },
-            pl: { subtitle: "Serwis Premium", brand: "Marka urządzenia", model: "Model i Pamięć", model_ph: "np. 16 Pro, 256GB", phone: "Numer telefonu", geo: "Lokalizacja", geo_ph: "Wpisz adres lub pinezkę", issue: "Opis problemu", issue_ph: "Co naprawić?", submit: "Złóż zamówienie", success: "ZAMÓWIENIE POTWIERDZONE<br>SKONTAKTUJEMY SIĘ WKRÓTCE" },
-            ru: { subtitle: "Премиальный сервис", brand: "Бренд устройства", model: "Модель и Память", model_ph: "напр. 16 Pro, 256ГБ", phone: "Номер телефона", geo: "Локация", geo_ph: "Адрес или пин", issue: "Описание проблемы", issue_ph: "Что починить?", submit: "Подтвердить запись", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА<br>МЫ СКОРО С ВАМИ СВЯЖЕМСЯ" }
+            en: { brand: "Device Brand", model: "Model & Details", model_ph: "e.g. 15 Pro", issue: "What happened?", issue_ph: "Problem", phone: "Phone", loc: "Location", next: "Next", back: "Back", confirm: "Confirm Booking", success: "BOOKING CONFIRMED<br>WE WILL CONTACT YOU" },
+            pl: { brand: "Marka urządzenia", model: "Model i szczegóły", model_ph: "np. 15 Pro", issue: "Co się stało?", issue_ph: "Problem", phone: "Telefon", loc: "Lokalizacja", next: "Dalej", back: "Wstecz", confirm: "Zatwierdź", success: "ZAMÓWIENIE POTWIERDZONE<br>ODDEZWIEMY SIĘ" },
+            ru: { brand: "Бренд устройства", model: "Модель и детали", model_ph: "напр. 15 Pro", issue: "Что случилось?", issue_ph: "Проблема", phone: "Телефон", loc: "Локация", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА<br>МЫ СКОРО СВЯЖЕМСЯ" }
         };
 
         function runTypewriter() {
             const words = ["aethestore", "service"];
-            const container = document.getElementById('text-node');
-            let wordIndex = 0, charIndex = 0, isDeleting = false;
-
+            const node = document.getElementById('text-node');
+            let wordIdx = 0, charIdx = 0, isDel = false;
             function type() {
-                const currentWord = words[wordIndex];
-                container.innerHTML = currentWord.substring(0, isDeleting ? charIndex-- : charIndex++);
-                let speed = isDeleting ? 50 : 150;
-                if (!isDeleting && charIndex > currentWord.length) { isDeleting = true; speed = 2000; }
-                else if (isDeleting && charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % words.length; speed = 500; }
+                const word = words[wordIdx];
+                node.innerText = word.substring(0, isDel ? charIdx-- : charIdx++);
+                let speed = isDel ? 60 : 140;
+                if (!isDel && charIdx > word.length) { isDel = true; speed = 2500; }
+                else if (isDel && charIdx === 0) { isDel = false; wordIdx = (wordIdx + 1) % words.length; speed = 500; }
                 setTimeout(type, speed);
             }
             type();
@@ -171,66 +186,90 @@
 
         function setLanguage(lang) {
             localStorage.setItem('aethe_lang', lang);
-            document.querySelectorAll('.lang-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
+            
             const t = translations[lang];
-            document.getElementById('app-subtitle').innerText = t.subtitle;
             document.getElementById('lbl-brand').innerText = t.brand;
             document.getElementById('lbl-model').innerText = t.model;
             document.getElementById('inp-model').placeholder = t.model_ph;
-            document.getElementById('lbl-phone').innerText = t.phone;
-            document.getElementById('lbl-geo').innerText = t.geo;
-            document.getElementById('inp-location').placeholder = t.geo_ph;
             document.getElementById('lbl-issue').innerText = t.issue;
             document.getElementById('inp-issue').placeholder = t.issue_ph;
-            document.getElementById('btn-submit').innerText = t.submit;
+            document.getElementById('lbl-phone').innerText = t.phone;
+            document.getElementById('lbl-loc').innerText = t.loc;
+            document.getElementById('btn-back').innerText = t.back;
             document.getElementById('success-text').innerHTML = t.success;
+            updateUI();
         }
 
-        function getLocation() {
-            if (navigator.geolocation) {
+        function selectBrand(name, el) {
+            orderData.brand = name;
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function setIssue(text) {
+            document.getElementById('inp-issue').value = text;
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + currentStep).classList.add('active');
+            document.getElementById('p-fill').style.width = (currentStep * 33.3) + '%';
+            document.getElementById('btn-back').style.display = currentStep === 1 ? 'none' : 'block';
+            
+            const lang = localStorage.getItem('aethe_lang') || 'en';
+            document.getElementById('btn-next').innerText = currentStep === 3 ? translations[lang].confirm : translations[lang].next;
+        }
+
+        function nextStep() {
+            if (currentStep < 3) {
+                currentStep++; updateUI();
                 tg.HapticFeedback.impactOccurred('medium');
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    document.getElementById('inp-location').value = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-                });
+            } else {
+                sendData();
             }
         }
 
-        function showSuccess() {
-            const app = document.getElementById('main-app');
-            const screen = document.getElementById('success-screen');
-            app.style.opacity = '0';
-            setTimeout(() => {
-                app.style.display = 'none';
-                screen.style.display = 'flex';
-                setTimeout(() => screen.style.opacity = '1', 50);
-                lottie.loadAnimation({
-                    container: document.getElementById('lottie-check'),
-                    renderer: 'svg', loop: false, autoplay: true,
-                    path: 'https://lottie.host/9c24095b-3b49-4786-8a7e-128c743e4987/j6IuE9G4W9.json'
-                });
-                tg.HapticFeedback.notificationOccurred('success');
-                setTimeout(() => tg.close(), 3500);
-            }, 800);
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--; updateUI();
+            }
         }
 
-        function sendDataToBot() {
-            const data = { brand: document.getElementById('inp-brand').value, device: document.getElementById('inp-model').value, phone: document.getElementById('inp-phone').value, location: document.getElementById('inp-location').value, problem: document.getElementById('inp-issue').value };
-            if (!data.device || !data.phone) { tg.HapticFeedback.notificationOccurred('error'); tg.showAlert("Fill device & phone!"); return; }
-            tg.sendData(JSON.stringify(data));
+        function sendData() {
+            orderData.device = document.getElementById('inp-model').value;
+            orderData.problem = document.getElementById('inp-issue').value;
+            orderData.phone = document.getElementById('inp-phone').value;
+            orderData.location = document.getElementById('inp-loc').value;
+
+            if (!orderData.device || !orderData.phone) {
+                tg.showAlert("Fill all fields!"); return;
+            }
+
+            tg.sendData(JSON.stringify(orderData));
             showSuccess();
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.getElementById('skeleton-screen').style.display = 'none';
-                const app = document.getElementById('main-app');
-                app.style.display = 'flex';
-                setTimeout(() => app.style.opacity = '1', 50);
-                runTypewriter();
-                setLanguage(localStorage.getItem('aethe_lang') || 'en');
-            }, 1200);
-        });
+        function showSuccess() {
+            document.getElementById('main-ui').style.display = 'none';
+            const screen = document.getElementById('success-screen');
+            screen.style.display = 'flex';
+            lottie.loadAnimation({
+                container: document.getElementById('lottie-check'),
+                path: 'https://lottie.host/9c24095b-3b49-4786-8a7e-128c743e4987/j6IuE9G4W9.json',
+                renderer: 'svg', loop: false, autoplay: true
+            });
+            tg.HapticFeedback.notificationOccurred('success');
+            setTimeout(() => tg.close(), 3500);
+        }
+
+        window.onload = () => {
+            runTypewriter();
+            setLanguage(localStorage.getItem('aethe_lang') || 'en');
+        };
     </script>
 </body>
 </html>
