@@ -29,7 +29,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Анимированный фон */
         .bg-blobs { position: fixed; width: 100%; height: 100%; z-index: -1; filter: blur(60px); opacity: 0.3; pointer-events: none; }
         .blob { position: absolute; background: var(--accent-color); border-radius: 50%; animation: move 25s infinite linear alternate; }
         .blob-1 { width: 400px; height: 400px; top: -150px; right: -100px; }
@@ -43,7 +42,6 @@
             box-sizing: border-box; z-index: 1;
         }
 
-        /* Прогресс-бар */
         .progress-container { height: 6px; background: var(--line-color); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
         .progress-fill { 
             height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-light)); 
@@ -61,14 +59,15 @@
         .lang-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
 
         .typewriter-section h1 { 
-            font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800; 
+            font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 800; 
             background: linear-gradient(135deg, var(--accent-color), #fff);
-            -webkit-background-clip: text; 
-            background-clip: text; /* Добавь эту строку для совместимости */
+            -webkit-background-clip: text;
+            background-clip: text; 
             -webkit-text-fill-color: transparent;
             margin: 0; 
+            white-space: nowrap;
         }
-        .cursor { display: inline-block; width: 3px; height: 22px; background: var(--accent-color); margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle; }
+        .cursor { display: inline-block; width: 3px; height: 20px; background: var(--accent-color); margin-left: 3px; animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         .step { display: none; }
@@ -77,17 +76,15 @@
 
         label { display: block; font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 12px; opacity: 0.8; }
 
-        /* Карточки Брендов */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .card { 
             background: var(--card-bg); border: 1px solid var(--line-color); 
             padding: 24px 10px; border-radius: 20px; text-align: center; 
-            font-weight: 800; transition: var(--transition); backdrop-filter: blur(10px);
+            font-weight: 800; font-size: 15px; transition: var(--transition); 
+            backdrop-filter: blur(10px);
         }
-        .card.selected { border-color: var(--accent-color); background: rgba(255, 140, 0, 0.12); box-shadow: 0 8px 20px rgba(255, 140, 0, 0.15); transform: translateY(-4px); }
+        .card.selected { border-color: var(--accent-color); background: rgba(255, 140, 0, 0.12); box-shadow: 0 8px 24px rgba(255, 140, 0, 0.15); transform: translateY(-4px); }
 
-        /* Поля ввода */
-        .input-wrapper { position: relative; }
         input { 
             width: 100%; background: var(--card-bg); border: 1px solid var(--line-color); 
             padding: 18px; border-radius: 16px; color: #fff; font-size: 16px; 
@@ -95,7 +92,6 @@
             backdrop-filter: blur(10px);
         }
         input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.1); }
-        .hint { font-size: 10px; color: #ff4444; margin-top: 5px; display: none; }
 
         .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
         .tag { background: var(--line-color); padding: 10px 16px; border-radius: 25px; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -104,7 +100,7 @@
         .nav-btn { 
             flex: 1; padding: 22px; border-radius: 20px; border: none; 
             font-size: 16px; font-weight: 800; text-transform: uppercase; 
-            transition: 0.3s;
+            transition: var(--transition);
         }
         .primary { background: var(--accent-color); color: #000; }
         .primary:disabled { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
@@ -120,7 +116,9 @@
 
     <div class="container" id="main-ui">
         <div class="header">
-            <div class="typewriter-section"><h1><span id="text-node"></span><span class="cursor"></span></h1></div>
+            <div class="typewriter-section">
+                <h1>AetheStore <span id="text-node"></span><span class="cursor"></span></h1>
+            </div>
             <div class="lang-switcher">
                 <button id="lang-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
                 <button id="lang-pl" class="lang-btn" onclick="setLanguage('pl')">PL</button>
@@ -143,7 +141,6 @@
         <div class="step" id="step2">
             <label id="lbl-model">Model</label>
             <input type="text" id="inp-model" placeholder="e.g. 15 Pro" oninput="validate()">
-            
             <label id="lbl-issue">Issue (min 10 chars)</label>
             <input type="text" id="inp-issue" placeholder="Describe problem" oninput="validate()">
             <div class="tags">
@@ -156,7 +153,6 @@
         <div class="step" id="step3">
             <label id="lbl-phone">Phone</label>
             <input type="tel" id="inp-phone" placeholder="+48 ___ ___ ___" oninput="validate()">
-            
             <label id="lbl-loc">Address</label>
             <input type="text" id="inp-loc" placeholder="City, Street" oninput="validate()">
         </div>
@@ -185,16 +181,37 @@
             ru: { model: "Модель", issue: "Описание (мин 10 симв.)", phone: "Телефон", loc: "Адрес", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА" }
         };
 
+        // ИСПРАВЛЕННАЯ АНИМАЦИЯ: Стирает полностью до конца
         function runTypewriter() {
-            const words = ["aethestore", "premium"];
+            const words = ["Premium", "Service"];
             const node = document.getElementById('text-node');
             let wordIdx = 0, charIdx = 0, isDel = false;
+
             function type() {
                 const word = words[wordIdx];
-                node.innerText = word.substring(0, isDel ? charIdx-- : charIdx++);
-                let speed = isDel ? 50 : 120;
-                if (!isDel && charIdx > word.length) { isDel = true; speed = 3000; }
-                else if (isDel && charIdx === 0) { isDel = false; wordIdx = (wordIdx + 1) % words.length; speed = 500; }
+                node.innerText = word.substring(0, charIdx);
+
+                if (isDel) {
+                    charIdx--;
+                } else {
+                    charIdx++;
+                }
+
+                let speed = isDel ? 60 : 140;
+
+                // Пауза на полностью напечатанном слове
+                if (!isDel && charIdx > word.length) {
+                    isDel = true;
+                    speed = 2500; 
+                } 
+                // Когда слово стерто полностью (до 0 символов)
+                else if (isDel && charIdx < 0) {
+                    isDel = false;
+                    charIdx = 0;
+                    wordIdx = (wordIdx + 1) % words.length;
+                    speed = 500;
+                }
+
                 setTimeout(type, speed);
             }
             type();
@@ -214,7 +231,6 @@
             updateUI();
         }
 
-        // --- ВАЛИДАЦИЯ И МАСКА ---
         const phoneInput = document.getElementById('inp-phone');
         phoneInput.addEventListener('focus', () => { if(!phoneInput.value) phoneInput.value = '+48 '; });
 
