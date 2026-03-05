@@ -11,19 +11,16 @@ from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-# Токен и ID админа берем из Environment на Render
-API_TOKEN = os.getenv('BOT_TOKEN', '').strip()
-ADMIN_ID_RAW = os.getenv('ADMIN_ID', '0').strip()
-ADMIN_ID = int(ADMIN_ID_RAW) if ADMIN_ID_RAW.isdigit() else 0
-
-WEB_APP_URL = 'https://gouthle.github.io/aethestore/?v=final_ultra_v1'
+API_TOKEN = os.getenv('BOT_TOKEN', '7719279464:AAHcG3fDRHAmX6jH8pTtT2_Zt6CyFhP6--8').strip()
+ADMIN_ID = int(os.getenv('ADMIN_ID', 931275762))
+WEB_APP_URL = 'https://gouthle.github.io/aethestore/?v=final_ultra_v2'
 PORT = int(os.getenv('PORT', 10000))
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-# --- МИНИ-СЕРВЕР (Для работы на бесплатном тарифе Render) ---
+# --- HTTP SERVER FOR RENDER (Free Tier Keep-Alive) ---
 class HealthCheckHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -141,9 +138,7 @@ async def handle_webapp_data(m: types.Message):
         s = STRINGS[lang]
         
         raw_loc = data.get('location', '')
-        geo_link = f'<a href="http://maps.google.com/?q={raw_loc.replace("📍", "").strip()}">Google Maps</a>' if "📍" in raw_loc else raw_loc
-        
-        # Делаем телефон кликабельным (tel:)
+        geo_link = f'<a href="https://www.google.com/maps?q={raw_loc.replace("📍", "").strip()}">Google Maps</a>' if "📍" in raw_loc else raw_loc
         phone = data.get('phone', '').strip()
         phone_link = f'<a href="tel:{phone}">{phone}</a>'
 
@@ -154,7 +149,6 @@ async def handle_webapp_data(m: types.Message):
                   f"{s['adm_issue']}{data.get('problem')}\n"
                   f"{s['adm_user']}@{m.from_user.username}")
 
-        # ПАНЕЛЬ АДМИНА: Ок, Выехал, Отмена
         adm_kb = InlineKeyboardMarkup(row_width=2).add(
             InlineKeyboardButton(s['adm_confirm_btn'], callback_data=f"adm_ok_{oid}_{m.from_user.id}"),
             InlineKeyboardButton(s['adm_way_btn'], callback_data=f"adm_way_{oid}_{m.from_user.id}"),
@@ -200,8 +194,11 @@ async def admin_action(c: types.CallbackQuery):
 
         await c.answer(status)
         
-        # Обновляем отчет админа, добавляя статус БЕЗ мусорных тегов
-        final_text = c.message.html_text + f"\n\n{STRINGS[l]['status_final']}<b>{status}</b>"
+        # ОЧИСТКА: Используем c.message.text (без тегов) и добавляем форматирование заново
+        clean_text = c.message.text
+        final_text = f"🚨 <b>{clean_text.splitlines()[0]}</b>\n\n" + "\n".join(clean_text.splitlines()[2:])
+        final_text += f"\n\n{STRINGS[l]['status_final']}<b>{status}</b>"
+        
         await bot.edit_message_text(
             text=final_text,
             chat_id=ADMIN_ID,
