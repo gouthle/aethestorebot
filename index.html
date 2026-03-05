@@ -12,10 +12,11 @@
     <style>
         :root {
             --accent-color: #FF8C00; 
+            --accent-light: #ffaa45;
             --bg-color: #000000;
-            --card-bg: rgba(255, 255, 255, 0.06);
-            --line-color: rgba(255, 255, 255, 0.12);
-            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --line-color: rgba(255, 255, 255, 0.15);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         body {
@@ -25,75 +26,92 @@
             margin: 0; padding: 0;
             min-height: 100vh;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Анимированный фон */
-        .bg-blobs { position: fixed; width: 100%; height: 100%; z-index: -1; filter: blur(80px); opacity: 0.35; pointer-events: none; }
-        .blob { position: absolute; background: var(--accent-color); border-radius: 50%; animation: move 18s infinite alternate; }
-        .blob-1 { width: 350px; height: 350px; top: -100px; right: -50px; }
-        .blob-2 { width: 250px; height: 250px; bottom: -50px; left: -80px; }
-        @keyframes move { from { transform: translate(0,0) scale(1); } to { transform: translate(40px, 80px) scale(1.1); } }
+        .bg-blobs { position: fixed; width: 100%; height: 100%; z-index: -1; filter: blur(60px); opacity: 0.3; pointer-events: none; }
+        .blob { position: absolute; background: var(--accent-color); border-radius: 50%; animation: move 25s infinite linear alternate; }
+        .blob-1 { width: 400px; height: 400px; top: -150px; right: -100px; }
+        .blob-2 { width: 300px; height: 300px; bottom: -100px; left: -150px; opacity: 0.5; }
+        @keyframes move { 0% { transform: translate(0,0); } 100% { transform: translate(60px, 40px); } }
 
         .container { 
             width: 100%; max-width: 450px; height: 100vh; 
-            margin: 0 auto; padding: 25px; 
+            margin: 0 auto; padding: 20px 25px; 
             display: flex; flex-direction: column; 
             box-sizing: border-box; z-index: 1;
         }
 
         /* Прогресс-бар */
-        .progress-container { height: 4px; background: var(--line-color); border-radius: 2px; margin-bottom: 30px; }
-        .progress-fill { height: 100%; background: var(--accent-color); width: 33%; transition: var(--transition); box-shadow: 0 0 12px var(--accent-color); }
+        .progress-container { height: 6px; background: var(--line-color); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { 
+            height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-light)); 
+            width: 33%; transition: var(--transition); 
+            box-shadow: 0 0 15px var(--accent-color);
+        }
 
-        /* Шапка с выбором языка */
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .lang-btn { background: var(--card-bg); border: 1px solid var(--line-color); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; margin-left: 5px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .lang-switcher { display: flex; gap: 6px; }
+        .lang-btn { 
+            background: var(--card-bg); border: 1px solid var(--line-color); color: #fff; 
+            padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; 
+            cursor: pointer; transition: 0.3s;
+        }
         .lang-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
 
-        .typewriter-section h1 { font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 800; color: var(--accent-color); margin: 0; }
-        .cursor { display: inline-block; width: 3px; height: 24px; background: var(--accent-color); margin-left: 5px; animation: blink 0.8s infinite; }
+        .typewriter-section h1 { 
+            font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800; 
+            background: linear-gradient(135deg, var(--accent-color), #fff);
+            -webkit-background-clip: text; 
+            background-clip: text; /* Добавь эту строку для совместимости */
+            -webkit-text-fill-color: transparent;
+            margin: 0; 
+        }
+        .cursor { display: inline-block; width: 3px; height: 22px; background: var(--accent-color); margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Шаги формы */
         .step { display: none; }
-        .step.active { display: block; animation: slideIn 0.5s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .step.active { display: block; animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        label { display: block; font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; }
+        label { display: block; font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 12px; opacity: 0.8; }
 
         /* Карточки Брендов */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .card { 
             background: var(--card-bg); border: 1px solid var(--line-color); 
-            padding: 22px 10px; border-radius: 18px; text-align: center; 
-            font-weight: 700; transition: 0.3s; cursor: pointer;
+            padding: 24px 10px; border-radius: 20px; text-align: center; 
+            font-weight: 800; transition: var(--transition); backdrop-filter: blur(10px);
         }
-        .card.selected { border-color: var(--accent-color); background: rgba(255, 140, 0, 0.15); box-shadow: 0 0 15px rgba(255, 140, 0, 0.1); }
+        .card.selected { border-color: var(--accent-color); background: rgba(255, 140, 0, 0.12); box-shadow: 0 8px 20px rgba(255, 140, 0, 0.15); transform: translateY(-4px); }
 
         /* Поля ввода */
+        .input-wrapper { position: relative; }
         input { 
             width: 100%; background: var(--card-bg); border: 1px solid var(--line-color); 
-            padding: 16px; border-radius: 14px; color: #fff; font-size: 16px; 
+            padding: 18px; border-radius: 16px; color: #fff; font-size: 16px; 
             box-sizing: border-box; outline: none; transition: 0.3s;
+            backdrop-filter: blur(10px);
         }
-        input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.08); }
+        input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.1); }
+        .hint { font-size: 10px; color: #ff4444; margin-top: 5px; display: none; }
 
-        /* Теги проблем */
-        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .tag { background: var(--line-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .tag { background: var(--line-color); padding: 10px 16px; border-radius: 25px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-        /* Кнопки навигации */
-        .btn-row { margin-top: auto; display: flex; gap: 12px; padding: 20px 0; }
+        .btn-row { margin-top: auto; display: flex; gap: 15px; padding: 30px 0; }
         .nav-btn { 
-            flex: 1; padding: 20px; border-radius: 18px; border: none; 
-            font-size: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+            flex: 1; padding: 22px; border-radius: 20px; border: none; 
+            font-size: 16px; font-weight: 800; text-transform: uppercase; 
+            transition: 0.3s;
         }
         .primary { background: var(--accent-color); color: #000; }
+        .primary:disabled { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
         .secondary { background: var(--line-color); color: #fff; }
 
-        /* Успех */
         #success-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
-        #success-text { font-family: 'JetBrains Mono', monospace; color: var(--accent-color); text-align: center; margin-top: 20px; padding: 0 30px; line-height: 1.5; }
+        #success-text { font-family: 'JetBrains Mono', monospace; color: var(--accent-color); text-align: center; font-size: 18px; margin-top: 25px; font-weight: 800; }
     </style>
 </head>
 <body>
@@ -102,9 +120,7 @@
 
     <div class="container" id="main-ui">
         <div class="header">
-            <div class="typewriter-section">
-                <h1><span id="text-node"></span><span class="cursor"></span></h1>
-            </div>
+            <div class="typewriter-section"><h1><span id="text-node"></span><span class="cursor"></span></h1></div>
             <div class="lang-switcher">
                 <button id="lang-en" class="lang-btn" onclick="setLanguage('en')">EN</button>
                 <button id="lang-pl" class="lang-btn" onclick="setLanguage('pl')">PL</button>
@@ -115,21 +131,21 @@
         <div class="progress-container"><div class="progress-fill" id="p-fill"></div></div>
 
         <div class="step active" id="step1">
-            <label id="lbl-brand">Device Brand</label>
+            <label id="lbl-brand">Brand</label>
             <div class="grid">
-                <div class="card selected" onclick="selectBrand('iPhone', this)">iPhone</div>
-                <div class="card" onclick="selectBrand('Samsung', this)">Samsung</div>
+                <div class="card selected" onclick="selectBrand('iPhone', this)"> iPhone</div>
+                <div class="card" onclick="selectBrand('Samsung', this)">SAMSUNG</div>
                 <div class="card" onclick="selectBrand('Xiaomi', this)">Xiaomi</div>
                 <div class="card" onclick="selectBrand('Other', this)">Other</div>
             </div>
         </div>
 
         <div class="step" id="step2">
-            <label id="lbl-model">Model & Details</label>
-            <input type="text" id="inp-model" placeholder="e.g. 15 Pro, 256GB">
+            <label id="lbl-model">Model</label>
+            <input type="text" id="inp-model" placeholder="e.g. 15 Pro" oninput="validate()">
             
-            <label id="lbl-issue">What happened?</label>
-            <input type="text" id="inp-issue" placeholder="Describe the problem">
+            <label id="lbl-issue">Issue (min 10 chars)</label>
+            <input type="text" id="inp-issue" placeholder="Describe problem" oninput="validate()">
             <div class="tags">
                 <div class="tag" onclick="setIssue('Screen 📱')">Screen 📱</div>
                 <div class="tag" onclick="setIssue('Battery 🔋')">Battery 🔋</div>
@@ -138,16 +154,16 @@
         </div>
 
         <div class="step" id="step3">
-            <label id="lbl-phone">Contact Phone</label>
-            <input type="tel" id="inp-phone" placeholder="+48 ___ ___ ___">
+            <label id="lbl-phone">Phone</label>
+            <input type="tel" id="inp-phone" placeholder="+48 ___ ___ ___" oninput="validate()">
             
-            <label id="lbl-loc">Your Location</label>
-            <input type="text" id="inp-loc" placeholder="Address or District">
+            <label id="lbl-loc">Address</label>
+            <input type="text" id="inp-loc" placeholder="City, Street" oninput="validate()">
         </div>
 
         <div class="btn-row">
             <button class="nav-btn secondary" id="btn-back" onclick="prevStep()" style="display: none;">Back</button>
-            <button class="nav-btn primary" id="btn-next" onclick="nextStep()">Next</button>
+            <button class="nav-btn primary" id="btn-next" onclick="nextStep()" disabled>Next</button>
         </div>
     </div>
 
@@ -164,20 +180,20 @@
         let orderData = { brand: 'iPhone', device: '', phone: '', location: '', problem: '' };
 
         const translations = {
-            en: { brand: "Device Brand", model: "Model & Details", model_ph: "e.g. 15 Pro", issue: "What happened?", issue_ph: "Problem", phone: "Phone", loc: "Location", next: "Next", back: "Back", confirm: "Confirm Booking", success: "BOOKING CONFIRMED<br>WE WILL CONTACT YOU" },
-            pl: { brand: "Marka urządzenia", model: "Model i szczegóły", model_ph: "np. 15 Pro", issue: "Co się stało?", issue_ph: "Problem", phone: "Telefon", loc: "Lokalizacja", next: "Dalej", back: "Wstecz", confirm: "Zatwierdź", success: "ZAMÓWIENIE POTWIERDZONE<br>ODDEZWIEMY SIĘ" },
-            ru: { brand: "Бренд устройства", model: "Модель и детали", model_ph: "напр. 15 Pro", issue: "Что случилось?", issue_ph: "Проблема", phone: "Телефон", loc: "Локация", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА<br>МЫ СКОРО СВЯЖЕМСЯ" }
+            en: { model: "Model", issue: "Issue (min 10 chars)", phone: "Phone", loc: "Address", next: "Next", back: "Back", confirm: "Confirm", success: "BOOKING CONFIRMED" },
+            pl: { model: "Model", issue: "Opis (min 10 znaków)", phone: "Telefon", loc: "Adres", next: "Dalej", back: "Wstecz", confirm: "Zatwierdź", success: "ZAMÓWIENIE PRZYJĘTE" },
+            ru: { model: "Модель", issue: "Описание (мин 10 симв.)", phone: "Телефон", loc: "Адрес", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА" }
         };
 
         function runTypewriter() {
-            const words = ["aethestore", "service"];
+            const words = ["aethestore", "premium"];
             const node = document.getElementById('text-node');
             let wordIdx = 0, charIdx = 0, isDel = false;
             function type() {
                 const word = words[wordIdx];
                 node.innerText = word.substring(0, isDel ? charIdx-- : charIdx++);
-                let speed = isDel ? 60 : 140;
-                if (!isDel && charIdx > word.length) { isDel = true; speed = 2500; }
+                let speed = isDel ? 50 : 120;
+                if (!isDel && charIdx > word.length) { isDel = true; speed = 3000; }
                 else if (isDel && charIdx === 0) { isDel = false; wordIdx = (wordIdx + 1) % words.length; speed = 500; }
                 setTimeout(type, speed);
             }
@@ -188,13 +204,9 @@
             localStorage.setItem('aethe_lang', lang);
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
-            
             const t = translations[lang];
-            document.getElementById('lbl-brand').innerText = t.brand;
             document.getElementById('lbl-model').innerText = t.model;
-            document.getElementById('inp-model').placeholder = t.model_ph;
             document.getElementById('lbl-issue').innerText = t.issue;
-            document.getElementById('inp-issue').placeholder = t.issue_ph;
             document.getElementById('lbl-phone').innerText = t.phone;
             document.getElementById('lbl-loc').innerText = t.loc;
             document.getElementById('btn-back').innerText = t.back;
@@ -202,16 +214,38 @@
             updateUI();
         }
 
+        // --- ВАЛИДАЦИЯ И МАСКА ---
+        const phoneInput = document.getElementById('inp-phone');
+        phoneInput.addEventListener('focus', () => { if(!phoneInput.value) phoneInput.value = '+48 '; });
+
+        function validate() {
+            const nextBtn = document.getElementById('btn-next');
+            let valid = false;
+
+            if (currentStep === 1) valid = true;
+            else if (currentStep === 2) {
+                valid = document.getElementById('inp-model').value.length >= 3 && 
+                        document.getElementById('inp-issue').value.length >= 10;
+            }
+            else if (currentStep === 3) {
+                const p = phoneInput.value.replace(/\D/g, '');
+                valid = p.length >= 11 && document.getElementById('inp-loc').value.length >= 3;
+            }
+            nextBtn.disabled = !valid;
+        }
+
         function selectBrand(name, el) {
             orderData.brand = name;
             document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
-            tg.HapticFeedback.impactOccurred('light');
+            tg.HapticFeedback.impactOccurred('medium');
+            validate();
         }
 
         function setIssue(text) {
             document.getElementById('inp-issue').value = text;
             tg.HapticFeedback.selectionChanged();
+            validate();
         }
 
         function updateUI() {
@@ -219,36 +253,27 @@
             document.getElementById('step' + currentStep).classList.add('active');
             document.getElementById('p-fill').style.width = (currentStep * 33.3) + '%';
             document.getElementById('btn-back').style.display = currentStep === 1 ? 'none' : 'block';
-            
-            const lang = localStorage.getItem('aethe_lang') || 'en';
+            const lang = localStorage.getItem('aethe_lang') || 'ru';
             document.getElementById('btn-next').innerText = currentStep === 3 ? translations[lang].confirm : translations[lang].next;
+            validate();
         }
 
         function nextStep() {
             if (currentStep < 3) {
                 currentStep++; updateUI();
-                tg.HapticFeedback.impactOccurred('medium');
-            } else {
-                sendData();
-            }
+                tg.HapticFeedback.impactOccurred('rigid');
+            } else sendData();
         }
 
         function prevStep() {
-            if (currentStep > 1) {
-                currentStep--; updateUI();
-            }
+            if (currentStep > 1) { currentStep--; updateUI(); }
         }
 
         function sendData() {
             orderData.device = document.getElementById('inp-model').value;
             orderData.problem = document.getElementById('inp-issue').value;
-            orderData.phone = document.getElementById('inp-phone').value;
+            orderData.phone = phoneInput.value;
             orderData.location = document.getElementById('inp-loc').value;
-
-            if (!orderData.device || !orderData.phone) {
-                tg.showAlert("Fill all fields!"); return;
-            }
-
             tg.sendData(JSON.stringify(orderData));
             showSuccess();
         }
@@ -268,7 +293,7 @@
 
         window.onload = () => {
             runTypewriter();
-            setLanguage(localStorage.getItem('aethe_lang') || 'en');
+            setLanguage(localStorage.getItem('aethe_lang') || 'ru');
         };
     </script>
 </body>
