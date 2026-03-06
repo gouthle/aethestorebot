@@ -12,37 +12,26 @@ from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 # 1. КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 # ==============================================================================
 
-# Токен бота из BotFather
 API_TOKEN = os.getenv('BOT_TOKEN', '').strip()
-
-# Твой личный ID (узнать можно у @userinfobot)
 ADMIN_ID_RAW = os.getenv('ADMIN_ID', '0').strip()
 ADMIN_ID = int(ADMIN_ID_RAW) if ADMIN_ID_RAW.isdigit() else 0
 
-# Ссылка на твой Mini App (GitHub Pages)
 WEB_APP_URL = 'https://gouthle.github.io/aethestore/' 
-
-# Порт для сервера (Render/Railway используют 10000 по умолчанию)
 PORT = int(os.getenv('PORT', 10000))
 
-# Глобальный статус сервиса (управляется командами /open и /close)
 is_service_open = True 
 
-# Настройка детального логирования для отладки
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# Проверка наличия токена
 if not API_TOKEN:
     logging.error("!!! КРИТИЧЕСКАЯ ОШИБКА: BOT_TOKEN отсутствует в переменных окружения !!!")
 
-# Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN) if API_TOKEN else None
 dp = Dispatcher(bot) if bot else None
 
-# Временное хранилище выбранных языков пользователей (в оперативной памяти)
 user_langs = {}
 
 # ==============================================================================
@@ -50,7 +39,6 @@ user_langs = {}
 # ==============================================================================
 
 class HealthCheckHandler(BaseHTTPRequestHandler):
-    """Минимальный сервер, чтобы Render не 'усыплял' бота"""
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
@@ -58,7 +46,6 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         self.wfile.write(b"AetheStore Backend is Online and Running")
     
     def log_message(self, format, *args):
-        # Отключаем спам в консоль при каждом запросе мониторинга
         return 
 
 def run_health_server():
@@ -69,7 +56,6 @@ def run_health_server():
     except Exception as e:
         logging.error(f"Ошибка при запуске HTTP сервера: {e}")
 
-# Запуск сервера в отдельном потоке, чтобы он не мешал работе бота
 threading.Thread(target=run_health_server, daemon=True).start()
 
 # ==============================================================================
@@ -148,19 +134,14 @@ STRINGS = {
 
 @dp.message_handler(commands=['start'])
 async def cmd_start(m: types.Message):
-    """Приветствие и выдача кнопки Mini App"""
     uid = m.from_user.id
-    
-    # Пытаемся определить язык пользователя из настроек его Telegram
     lang = m.from_user.language_code if m.from_user.language_code in STRINGS else 'ru'
     user_langs[uid] = lang
     
-    # Создаем клавиатуру с кнопкой Web App
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
     kb.add(types.KeyboardButton(STRINGS[lang]['btn_app'], web_app=WebAppInfo(url=WEB_APP_URL)))
     
     msg = STRINGS[lang]['welcome']
-    # Добавляем приписку, если сервис закрыт
     if not is_service_open:
         msg += STRINGS[lang]['closed_msg']
         
@@ -168,7 +149,6 @@ async def cmd_start(m: types.Message):
 
 @dp.message_handler(commands=['open', 'close'], user_id=ADMIN_ID)
 async def cmd_toggle_service(m: types.Message):
-    """Админ-команды для управления статусом работы"""
     global is_service_open
     is_service_open = (m.text == '/open')
     status_text = "ОТКРЫТО ✅" if is_service_open else "ЗАКРЫТО 🌙"
@@ -180,30 +160,29 @@ async def cmd_toggle_service(m: types.Message):
 
 @dp.message_handler(content_types='web_app_data')
 async def handle_webapp_data(m: types.Message):
-    """Прием JSON данных из формы Mini App"""
     try:
-        # Получаем язык пользователя для ответа
         lang = user_langs.get(m.from_user.id, 'ru')
         s = STRINGS[lang]
         
-        # Парсим входящий JSON
         data = json.loads(m.web_app_data.data)
-        
-        # Генерируем уникальный короткий ID заказа
         oid = str(uuid.uuid4())[:6].upper()
         
-        # Подсчет итоговой цены (базовая цена + 50 PLN за ASAP)
+        # Подсчет итоговой цены
         base_price = int(data.get('price', 0))
         priority_fee = 50 if data.get('priority') else 0
         total_price = base_price + priority_fee
         
-        # Формируем детальный отчет для ТЕБЯ (Админа)
+        # Получаем выбранную услугу (карточку)
+        chosen_service = data.get('service', 'General Service')
+
+        # Формируем детальный отчет для Админа
+        # ДОБАВЛЕНО: Вывод услуги жирным шрифтом
         report = (
             f"{s['adm_new'].format(oid)}"
             f"{s['adm_prio'] if data.get('priority') else ''}\n"
             f"━━━━━━━━━━━━━━━━━━\n"
             f"{s['adm_dev']}<b>{data.get('brand')} {data.get('device')}</b>\n"
-            f"{s['adm_srv']}{data.get('service')}\n"
+            f"{s['adm_srv']}<b>{chosen_service}</b>\n"
             f"{s['adm_iss']}{data.get('problem')}\n"
             f"{s['adm_ph']}<code>{data.get('phone')}</code>\n"
             f"{s['adm_loc']}<code>{data.get('location')}</code>\n"
@@ -212,17 +191,14 @@ async def handle_webapp_data(m: types.Message):
             f"{s['adm_user']}@{m.from_user.username or m.from_user.id}"
         )
 
-        # Клавиатура управления заказом для админа
         adm_kb = InlineKeyboardMarkup(row_width=2).add(
             InlineKeyboardButton("✅ Ок", callback_data=f"adm_ok_{oid}_{m.from_user.id}"),
             InlineKeyboardButton("🚗 Выехал", callback_data=f"adm_way_{oid}_{m.from_user.id}"),
             InlineKeyboardButton("❌ Отказ", callback_data=f"adm_no_{oid}_{m.from_user.id}")
         )
 
-        # Отправляем отчет тебе
         await bot.send_message(ADMIN_ID, report, parse_mode="HTML", reply_markup=adm_kb)
 
-        # Отправляем подтверждение и кнопку оплаты КЛИЕНТУ
         client_kb = InlineKeyboardMarkup().add(
             InlineKeyboardButton(s['pay_dep_btn'], callback_data=f"user_pay_{oid}")
         )
@@ -238,18 +214,13 @@ async def handle_webapp_data(m: types.Message):
 
 @dp.callback_query_handler(lambda c: True)
 async def process_all_callbacks(c: types.CallbackQuery):
-    """Обработка всех нажатий на inline-кнопки"""
     lang = user_langs.get(c.from_user.id, 'ru')
     s = STRINGS[lang]
 
-    # Обработка действий Админа (Принять / Выехать / Отказать)
     if c.data.startswith('adm_'):
         _, act, oid, cid = c.data.split('_')
-        
-        # Определяем текст статуса
         status_label = s['ok'] if act == 'ok' else s['way'] if act == 'way' else s['no']
         
-        # Уведомляем клиента об изменении статуса
         client_notification = f"Заказ #{oid}: <b>{status_label}</b>"
         if act == 'way':
             client_notification += f"\n{s['way']}. Ожидайте мастера в течение часа."
@@ -257,11 +228,9 @@ async def process_all_callbacks(c: types.CallbackQuery):
         await bot.send_message(int(cid), client_notification, parse_mode="HTML")
         await c.answer(status_label)
         
-        # Визуально обновляем сообщение в чате админа (убираем кнопки и пишем статус)
         new_admin_text = c.message.html_text + f"\n\n{s['status']}<b>{status_label}</b>"
         await c.message.edit_text(new_admin_text, parse_mode="HTML", reply_markup=None)
 
-    # Обработка кнопки "Внести депозит" у клиента
     elif c.data.startswith('user_pay_'):
         oid = c.data.split('_')[2]
         await bot.send_message(c.from_user.id, s['blik_info'].format(oid), parse_mode="HTML")

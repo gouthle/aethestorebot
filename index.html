@@ -237,12 +237,10 @@
             ru: { brand: "Бренд устройства", service: "Выберите услугу", model: "Название модели", issue: "Что случилось?", phone: "Номер телефона", loc: "Адрес в Кракове", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА!<br>МЫ СКОРО СВЯЖЕМСЯ", prio: "⚡ СРОЧНЫЙ ВЫЕЗД", prio_sub: "Приезд за 30-60 мин (+50 PLN)" }
         };
 
-        // ТИПЕР (Анимация текста)
         function runTypewriter() {
             const words = ["Premium", "Service", "Expert"];
             const node = document.getElementById('text-node');
             let wordIdx = 0, charIdx = 0, isDel = false;
-
             function type() {
                 const word = words[wordIdx];
                 node.innerText = word.substring(0, charIdx);
@@ -255,7 +253,6 @@
             type();
         }
 
-        // АВТО-ОПРЕДЕЛЕНИЕ МОДЕЛИ
         function detectDevice() {
             const w = window.screen.width * window.devicePixelRatio;
             if (w > 1100) document.getElementById('auto-model-info').innerText = "Detected: High-end device series ✨";
@@ -285,6 +282,7 @@
             document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
             tg.HapticFeedback.impactOccurred('medium');
+            validate();
         }
 
         function selectService(s, p, el) {
@@ -299,15 +297,20 @@
             orderData.priority = !orderData.priority;
             document.getElementById('prio-status').innerText = orderData.priority ? '✅' : '⬜';
             tg.HapticFeedback.impactOccurred('rigid');
+            validate();
         }
 
         function validate() {
             const btn = document.getElementById('btn-next');
             let v = false;
             if (currentStep === 1) v = true;
-            else if (currentStep === 2) v = orderData.service && document.getElementById('inp-model').value.length > 2;
-            else if (currentStep === 3) v = document.getElementById('inp-issue').value.length >= 10;
-            else if (currentStep === 4) v = document.getElementById('inp-phone').value.length > 8 && document.getElementById('inp-loc').value.length > 3;
+            else if (currentStep === 2) v = (orderData.service !== '' && document.getElementById('inp-model').value.length > 2);
+            else if (currentStep === 3) v = (document.getElementById('inp-issue').value.length >= 10);
+            else if (currentStep === 4) {
+                const p = document.getElementById('inp-phone').value;
+                const l = document.getElementById('inp-loc').value;
+                v = (p.length > 8 && l.length > 3);
+            }
             btn.disabled = !v;
         }
 
@@ -323,29 +326,48 @@
         }
 
         function nextStep() {
-            if (currentStep < 4) { currentStep++; updateUI(); tg.HapticFeedback.impactOccurred('medium'); }
+            if (currentStep < 4) { 
+                currentStep++; 
+                updateUI(); 
+                tg.HapticFeedback.impactOccurred('medium'); 
+            }
             else sendData();
         }
 
-        function prevStep() { if (currentStep > 1) { currentStep--; updateUI(); } }
+        function prevStep() { 
+            if (currentStep > 1) { 
+                currentStep--; 
+                updateUI(); 
+                tg.HapticFeedback.impactOccurred('light');
+            } 
+        }
 
         function sendData() {
             orderData.device = document.getElementById('inp-model').value;
             orderData.problem = document.getElementById('inp-issue').value;
             orderData.phone = document.getElementById('inp-phone').value;
             orderData.location = document.getElementById('inp-loc').value;
+            
+            if (!orderData.service) orderData.service = "General Repair";
+            
             tg.sendData(JSON.stringify(orderData));
             
             document.getElementById('main-ui').style.display = 'none';
             document.getElementById('success-screen').style.display = 'flex';
+            
             lottie.loadAnimation({
                 container: document.getElementById('lottie-check'),
                 path: 'https://lottie.host/9c24095b-3b49-4786-8a7e-128c743e4987/j6IuE9G4W9.json',
                 renderer: 'svg', loop: false, autoplay: true
             });
+            
             tg.HapticFeedback.notificationOccurred('success');
             setTimeout(() => tg.close(), 3000);
         }
+
+        // Автоматическая маска телефона
+        const phoneInput = document.getElementById('inp-phone');
+        phoneInput.addEventListener('focus', () => { if(!phoneInput.value) phoneInput.value = '+48 '; });
 
         window.onload = () => {
             runTypewriter();
