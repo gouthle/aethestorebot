@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>aethestore Premium</title>
+    <title>aethestore Premium Terminal</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;800&display=swap" rel="stylesheet">
 
     <style>
+        /* --- ПЕРЕМЕННЫЕ И ОСНОВА --- */
         :root {
             --accent-color: #FF8C00; 
             --accent-light: #ffaa45;
@@ -19,22 +20,25 @@
             --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: #fff;
             margin: 0; padding: 0;
             min-height: 100vh;
             overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
 
+        /* --- АНИМИРОВАННЫЙ ФОН (BLOBS) --- */
         .bg-blobs { position: fixed; width: 100%; height: 100%; z-index: -1; filter: blur(60px); opacity: 0.3; pointer-events: none; }
         .blob { position: absolute; background: var(--accent-color); border-radius: 50%; animation: move 25s infinite linear alternate; }
         .blob-1 { width: 400px; height: 400px; top: -150px; right: -100px; }
         .blob-2 { width: 300px; height: 300px; bottom: -100px; left: -150px; opacity: 0.5; }
-        @keyframes move { 0% { transform: translate(0,0); } 100% { transform: translate(60px, 40px); } }
+        @keyframes move { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(60px, 40px) rotate(90deg); } }
 
+        /* --- КОНТЕЙНЕР --- */
         .container { 
             width: 100%; max-width: 450px; height: 100vh; 
             margin: 0 auto; padding: 20px 25px; 
@@ -42,34 +46,23 @@
             box-sizing: border-box; z-index: 1;
         }
 
-        .progress-container { height: 6px; background: var(--line-color); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
-        .progress-fill { 
-            height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-light)); 
-            width: 33%; transition: var(--transition); 
-            box-shadow: 0 0 15px var(--accent-color);
-        }
-
-        /* --- ФИКС ХЕДЕРА --- */
+        /* --- HEADER С ФИКСОМ ВЫТАЛКИВАНИЯ --- */
         .header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             gap: 10px;
         }
 
-        .typewriter-section {
-            flex: 1; 
-            min-width: 0;
-        }
-
+        .typewriter-section { flex: 1; min-width: 0; }
         .typewriter-section h1 { 
             font-family: 'JetBrains Mono', monospace; 
-            font-size: 19px; /* Оптимальный размер, чтобы не выталкивало кнопки */
+            font-size: 19px; 
             font-weight: 800; 
             background: linear-gradient(135deg, var(--accent-color), #fff);
             -webkit-background-clip: text;
-            background-clip: text; 
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: 0; 
             white-space: nowrap;
@@ -79,12 +72,7 @@
         .cursor { display: inline-block; width: 2px; height: 17px; background: var(--accent-color); margin-left: 2px; animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        .lang-switcher { 
-            display: flex; 
-            gap: 4px; 
-            flex-shrink: 0; /* ЗАПРЕЩАЕМ кнопкам сжиматься */
-        }
-
+        .lang-switcher { display: flex; gap: 4px; flex-shrink: 0; }
         .lang-btn { 
             background: var(--card-bg); border: 1px solid var(--line-color); color: #fff; 
             padding: 6px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; 
@@ -92,13 +80,22 @@
         }
         .lang-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
 
-        /* --- ОСТАЛЬНЫЕ СТИЛИ --- */
+        /* --- PROGRESS BAR --- */
+        .progress-container { height: 6px; background: var(--line-color); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { 
+            height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-light)); 
+            width: 25%; transition: var(--transition); 
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        /* --- ШАГИ И ФОРМА --- */
         .step { display: none; }
         .step.active { display: block; animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        label { display: block; font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 12px; opacity: 0.8; }
+        label { display: block; font-size: 10px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 12px; opacity: 0.8; }
 
+        /* КАРТОЧКИ БРЕНДОВ */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .card { 
             background: var(--card-bg); border: 1px solid var(--line-color); 
@@ -108,6 +105,17 @@
         }
         .card.selected { border-color: var(--accent-color); background: rgba(255, 140, 0, 0.12); box-shadow: 0 8px 24px rgba(255, 140, 0, 0.15); transform: translateY(-4px); }
 
+        /* ПРАЙС-ЛИСТ */
+        .price-item { 
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); border: 1px solid var(--line-color);
+            padding: 18px; border-radius: 16px; margin-bottom: 10px; 
+            transition: 0.3s; cursor: pointer; backdrop-filter: blur(10px);
+        }
+        .price-item.selected { border-color: var(--accent-color); background: rgba(255,140,0,0.1); }
+        .price-item b { color: var(--accent-color); font-family: 'JetBrains Mono', monospace; }
+
+        /* ИНПУТЫ */
         input { 
             width: 100%; background: var(--card-bg); border: 1px solid var(--line-color); 
             padding: 18px; border-radius: 16px; color: #fff; font-size: 16px; 
@@ -116,9 +124,16 @@
         }
         input:focus { border-color: var(--accent-color); background: rgba(255,255,255,0.1); }
 
-        .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-        .tag { background: var(--line-color); padding: 10px 16px; border-radius: 25px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        /* ПРИОРИТЕТ */
+        .priority-box {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,140,0,0.05); border: 1px solid var(--accent-color);
+            padding: 18px; border-radius: 18px; margin-top: 20px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .priority-box:active { transform: scale(0.98); }
 
+        /* КНОПКИ НАВИГАЦИИ */
         .btn-row { margin-top: auto; display: flex; gap: 15px; padding: 30px 0; }
         .nav-btn { 
             flex: 1; padding: 22px; border-radius: 20px; border: none; 
@@ -129,8 +144,9 @@
         .primary:disabled { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
         .secondary { background: var(--line-color); color: #fff; }
 
+        /* ЭКРАН УСПЕХА */
         #success-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
-        #success-text { font-family: 'JetBrains Mono', monospace; color: var(--accent-color); text-align: center; font-size: 18px; margin-top: 25px; font-weight: 800; }
+        #success-text { font-family: 'JetBrains Mono', monospace; color: var(--accent-color); text-align: center; font-size: 18px; margin-top: 25px; font-weight: 800; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -152,32 +168,48 @@
         <div class="progress-container"><div class="progress-fill" id="p-fill"></div></div>
 
         <div class="step active" id="step1">
-            <label id="lbl-brand">Brand</label>
+            <label id="lbl-brand">Device Brand</label>
             <div class="grid">
                 <div class="card selected" onclick="selectBrand('iPhone', this)"> iPhone</div>
                 <div class="card" onclick="selectBrand('Samsung', this)">SAMSUNG</div>
                 <div class="card" onclick="selectBrand('Xiaomi', this)">Xiaomi</div>
                 <div class="card" onclick="selectBrand('Other', this)">Other</div>
             </div>
+            <p id="auto-model-info" style="font-size: 10px; margin-top: 20px; opacity: 0.5; text-align: center; font-family: 'JetBrains Mono';"></p>
         </div>
 
-        <div class="step" id="step2">
-            <label id="lbl-model">Model</label>
-            <input type="text" id="inp-model" placeholder="e.g. 15 Pro" oninput="validate()">
-            <label id="lbl-issue">Issue (min 10 chars)</label>
-            <input type="text" id="inp-issue" placeholder="Describe problem" oninput="validate()">
-            <div class="tags">
-                <div class="tag" onclick="setIssue('Screen 📱')">Screen 📱</div>
-                <div class="tag" onclick="setIssue('Battery 🔋')">Battery 🔋</div>
-                <div class="tag" onclick="setIssue('Water 💧')">Water 💧</div>
+        <div id="step2" class="step">
+            <label id="lbl-service">Select Service</label>
+            <div id="price-list">
+                <div class="price-item" onclick="selectService('Screen Repair', 350, this)">
+                    <span id="srv-1">Screen Repair 📱</span><b>350+ PLN</b>
+                </div>
+                <div class="price-item" onclick="selectService('Battery Replace', 180, this)">
+                    <span id="srv-2">Battery Replace 🔋</span><b>180+ PLN</b>
+                </div>
+                <div class="price-item" onclick="selectService('Other / Diagnosis', 50, this)">
+                    <span id="srv-3">Diagnosis 🔧</span><b>50 PLN</b>
+                </div>
+            </div>
+            <label id="lbl-model">Model Name</label>
+            <input type="text" id="inp-model" placeholder="e.g. 15 Pro Max" oninput="validate()">
+        </div>
+
+        <div id="step3" class="step">
+            <label id="lbl-issue">What happened?</label>
+            <input type="text" id="inp-issue" placeholder="Describe problem (min 10 chars)" oninput="validate()">
+            
+            <div class="priority-box" onclick="togglePriority()">
+                <div><b id="lbl-prio">⚡ ASAP PRIORITY</b><br><small id="lbl-prio-sub">Arrival in 30-60 min (+50 PLN)</small></div>
+                <div id="prio-status" style="font-size: 20px;">⬜</div>
             </div>
         </div>
 
-        <div class="step" id="step3">
-            <label id="lbl-phone">Phone</label>
+        <div id="step4" class="step">
+            <label id="lbl-phone">Phone Number</label>
             <input type="tel" id="inp-phone" placeholder="+48 ___ ___ ___" oninput="validate()">
-            <label id="lbl-loc">Address</label>
-            <input type="text" id="inp-loc" placeholder="City, Street" oninput="validate()">
+            <label id="lbl-loc">Location in Kraków</label>
+            <input type="text" id="inp-loc" placeholder="Street or District" oninput="validate()">
         </div>
 
         <div class="btn-row">
@@ -194,137 +226,130 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.setHeaderColor('#000000');
 
         let currentStep = 1;
-        let orderData = { brand: 'iPhone', device: '', phone: '', location: '', problem: '' };
+        let orderData = { brand: 'iPhone', device: '', phone: '', location: '', problem: '', service: '', price: 0, priority: false };
 
         const translations = {
-            en: { model: "Model", issue: "Issue (min 10 chars)", phone: "Phone", loc: "Address", next: "Next", back: "Back", confirm: "Confirm", success: "BOOKING CONFIRMED" },
-            pl: { model: "Model", issue: "Opis (min 10 znaków)", phone: "Telefon", loc: "Adres", next: "Dalej", back: "Wstecz", confirm: "Zatwierdź", success: "ZAMÓWIENIE PRZYJĘTE" },
-            ru: { model: "Модель", issue: "Описание (мин 10 симв.)", phone: "Телефон", loc: "Адрес", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА" }
+            en: { brand: "Device Brand", service: "Select Service", model: "Model Name", issue: "What happened?", phone: "Phone Number", loc: "Location", next: "Next", back: "Back", confirm: "Confirm", success: "BOOKING CONFIRMED!<br>WE'LL CALL YOU SOON", prio: "⚡ ASAP PRIORITY", prio_sub: "Arrival in 30-60 min (+50 PLN)" },
+            pl: { brand: "Marka urządzenia", service: "Wybierz usługę", model: "Nazwa modelu", issue: "Opis usterki", phone: "Numer telefonu", loc: "Lokalizacja", next: "Dalej", back: "Wstecz", confirm: "Zatwierdź", success: "ZAMÓWIENIE PRZYJĘTE!<br>ZADZWONIMY DO CIEBIE", prio: "⚡ TRYB PILNY", prio_sub: "Dojazd w 30-60 min (+50 PLN)" },
+            ru: { brand: "Бренд устройства", service: "Выберите услугу", model: "Название модели", issue: "Что случилось?", phone: "Номер телефона", loc: "Адрес в Кракове", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА!<br>МЫ СКОРО СВЯЖЕМСЯ", prio: "⚡ СРОЧНЫЙ ВЫЕЗД", prio_sub: "Приезд за 30-60 мин (+50 PLN)" }
         };
 
-        // ИСПРАВЛЕННАЯ АНИМАЦИЯ (Стирает до 0)
+        // ТИПЕР (Анимация текста)
         function runTypewriter() {
-            const words = ["Premium", "Service"];
+            const words = ["Premium", "Service", "Expert"];
             const node = document.getElementById('text-node');
             let wordIdx = 0, charIdx = 0, isDel = false;
 
             function type() {
                 const word = words[wordIdx];
                 node.innerText = word.substring(0, charIdx);
-
-                if (isDel) charIdx--;
-                else charIdx++;
-
-                let speed = isDel ? 50 : 130;
-
-                if (!isDel && charIdx > word.length) {
-                    isDel = true;
-                    speed = 2500; 
-                } 
-                else if (isDel && charIdx < 0) {
-                    isDel = false;
-                    charIdx = 0;
-                    wordIdx = (wordIdx + 1) % words.length;
-                    speed = 400;
-                }
+                if (isDel) charIdx--; else charIdx++;
+                let speed = isDel ? 60 : 140;
+                if (!isDel && charIdx > word.length) { isDel = true; speed = 2500; }
+                else if (isDel && charIdx < 0) { isDel = false; charIdx = 0; wordIdx = (wordIdx + 1) % words.length; speed = 500; }
                 setTimeout(type, speed);
             }
             type();
+        }
+
+        // АВТО-ОПРЕДЕЛЕНИЕ МОДЕЛИ
+        function detectDevice() {
+            const w = window.screen.width * window.devicePixelRatio;
+            if (w > 1100) document.getElementById('auto-model-info').innerText = "Detected: High-end device series ✨";
         }
 
         function setLanguage(lang) {
             localStorage.setItem('aethe_lang', lang);
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
+            
             const t = translations[lang];
+            document.getElementById('lbl-brand').innerText = t.brand;
+            document.getElementById('lbl-service').innerText = t.service;
             document.getElementById('lbl-model').innerText = t.model;
             document.getElementById('lbl-issue').innerText = t.issue;
             document.getElementById('lbl-phone').innerText = t.phone;
             document.getElementById('lbl-loc').innerText = t.loc;
             document.getElementById('btn-back').innerText = t.back;
+            document.getElementById('lbl-prio').innerText = t.prio;
+            document.getElementById('lbl-prio-sub').innerText = t.prio_sub;
             document.getElementById('success-text').innerHTML = t.success;
             updateUI();
         }
 
-        const phoneInput = document.getElementById('inp-phone');
-        phoneInput.addEventListener('focus', () => { if(!phoneInput.value) phoneInput.value = '+48 '; });
-
-        function validate() {
-            const nextBtn = document.getElementById('btn-next');
-            let valid = false;
-            if (currentStep === 1) valid = true;
-            else if (currentStep === 2) {
-                valid = document.getElementById('inp-model').value.length >= 3 && 
-                        document.getElementById('inp-issue').value.length >= 10;
-            }
-            else if (currentStep === 3) {
-                const p = phoneInput.value.replace(/\D/g, '');
-                valid = p.length >= 11 && document.getElementById('inp-loc').value.length >= 3;
-            }
-            nextBtn.disabled = !valid;
-        }
-
-        function selectBrand(name, el) {
-            orderData.brand = name;
+        function selectBrand(b, el) {
+            orderData.brand = b;
             document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
             tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function selectService(s, p, el) {
+            orderData.service = s; orderData.price = p;
+            document.querySelectorAll('.price-item').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            tg.HapticFeedback.selectionChanged();
             validate();
         }
 
-        function setIssue(text) {
-            document.getElementById('inp-issue').value = text;
-            tg.HapticFeedback.selectionChanged();
-            validate();
+        function togglePriority() {
+            orderData.priority = !orderData.priority;
+            document.getElementById('prio-status').innerText = orderData.priority ? '✅' : '⬜';
+            tg.HapticFeedback.impactOccurred('rigid');
+        }
+
+        function validate() {
+            const btn = document.getElementById('btn-next');
+            let v = false;
+            if (currentStep === 1) v = true;
+            else if (currentStep === 2) v = orderData.service && document.getElementById('inp-model').value.length > 2;
+            else if (currentStep === 3) v = document.getElementById('inp-issue').value.length >= 10;
+            else if (currentStep === 4) v = document.getElementById('inp-phone').value.length > 8 && document.getElementById('inp-loc').value.length > 3;
+            btn.disabled = !v;
         }
 
         function updateUI() {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById('step' + currentStep).classList.add('active');
-            document.getElementById('p-fill').style.width = (currentStep * 33.3) + '%';
+            document.getElementById('p-fill').style.width = (currentStep * 25) + '%';
             document.getElementById('btn-back').style.display = currentStep === 1 ? 'none' : 'block';
+            
             const lang = localStorage.getItem('aethe_lang') || 'ru';
-            document.getElementById('btn-next').innerText = currentStep === 3 ? translations[lang].confirm : translations[lang].next;
+            document.getElementById('btn-next').innerText = currentStep === 4 ? translations[lang].confirm : translations[lang].next;
             validate();
         }
 
         function nextStep() {
-            if (currentStep < 3) {
-                currentStep++; updateUI();
-                tg.HapticFeedback.impactOccurred('rigid');
-            } else sendData();
+            if (currentStep < 4) { currentStep++; updateUI(); tg.HapticFeedback.impactOccurred('medium'); }
+            else sendData();
         }
 
-        function prevStep() {
-            if (currentStep > 1) { currentStep--; updateUI(); }
-        }
+        function prevStep() { if (currentStep > 1) { currentStep--; updateUI(); } }
 
         function sendData() {
             orderData.device = document.getElementById('inp-model').value;
             orderData.problem = document.getElementById('inp-issue').value;
-            orderData.phone = phoneInput.value;
+            orderData.phone = document.getElementById('inp-phone').value;
             orderData.location = document.getElementById('inp-loc').value;
             tg.sendData(JSON.stringify(orderData));
-            showSuccess();
-        }
-
-        function showSuccess() {
+            
             document.getElementById('main-ui').style.display = 'none';
-            const screen = document.getElementById('success-screen');
-            screen.style.display = 'flex';
+            document.getElementById('success-screen').style.display = 'flex';
             lottie.loadAnimation({
                 container: document.getElementById('lottie-check'),
                 path: 'https://lottie.host/9c24095b-3b49-4786-8a7e-128c743e4987/j6IuE9G4W9.json',
                 renderer: 'svg', loop: false, autoplay: true
             });
             tg.HapticFeedback.notificationOccurred('success');
-            setTimeout(() => tg.close(), 3500);
+            setTimeout(() => tg.close(), 3000);
         }
 
         window.onload = () => {
             runTypewriter();
+            detectDevice();
             setLanguage(localStorage.getItem('aethe_lang') || 'ru');
         };
     </script>
