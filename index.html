@@ -42,34 +42,57 @@
             box-sizing: border-box; z-index: 1;
         }
 
-        .progress-container { height: 6px; background: var(--line-color); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
+        .progress-container { height: 6px; background: var(--line-color); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         .progress-fill { 
             height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-light)); 
             width: 33%; transition: var(--transition); 
             box-shadow: 0 0 15px var(--accent-color);
         }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .lang-switcher { display: flex; gap: 6px; }
-        .lang-btn { 
-            background: var(--card-bg); border: 1px solid var(--line-color); color: #fff; 
-            padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; 
-            cursor: pointer; transition: 0.3s;
+        /* --- ФИКС ХЕДЕРА --- */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px;
+            gap: 10px;
         }
-        .lang-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
+
+        .typewriter-section {
+            flex: 1; 
+            min-width: 0;
+        }
 
         .typewriter-section h1 { 
-            font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 800; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 19px; /* Оптимальный размер, чтобы не выталкивало кнопки */
+            font-weight: 800; 
             background: linear-gradient(135deg, var(--accent-color), #fff);
             -webkit-background-clip: text;
             background-clip: text; 
             -webkit-text-fill-color: transparent;
             margin: 0; 
             white-space: nowrap;
+            overflow: hidden;
         }
-        .cursor { display: inline-block; width: 3px; height: 20px; background: var(--accent-color); margin-left: 3px; animation: blink 0.8s infinite; vertical-align: middle; }
+        
+        .cursor { display: inline-block; width: 2px; height: 17px; background: var(--accent-color); margin-left: 2px; animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+        .lang-switcher { 
+            display: flex; 
+            gap: 4px; 
+            flex-shrink: 0; /* ЗАПРЕЩАЕМ кнопкам сжиматься */
+        }
+
+        .lang-btn { 
+            background: var(--card-bg); border: 1px solid var(--line-color); color: #fff; 
+            padding: 6px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; 
+            cursor: pointer; transition: 0.3s;
+        }
+        .lang-btn.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
+
+        /* --- ОСТАЛЬНЫЕ СТИЛИ --- */
         .step { display: none; }
         .step.active { display: block; animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -181,7 +204,7 @@
             ru: { model: "Модель", issue: "Описание (мин 10 симв.)", phone: "Телефон", loc: "Адрес", next: "Далее", back: "Назад", confirm: "Подтвердить", success: "ЗАПИСЬ ПОДТВЕРЖДЕНА" }
         };
 
-        // ИСПРАВЛЕННАЯ АНИМАЦИЯ: Стирает полностью до конца
+        // ИСПРАВЛЕННАЯ АНИМАЦИЯ (Стирает до 0)
         function runTypewriter() {
             const words = ["Premium", "Service"];
             const node = document.getElementById('text-node');
@@ -191,27 +214,21 @@
                 const word = words[wordIdx];
                 node.innerText = word.substring(0, charIdx);
 
-                if (isDel) {
-                    charIdx--;
-                } else {
-                    charIdx++;
-                }
+                if (isDel) charIdx--;
+                else charIdx++;
 
-                let speed = isDel ? 60 : 140;
+                let speed = isDel ? 50 : 130;
 
-                // Пауза на полностью напечатанном слове
                 if (!isDel && charIdx > word.length) {
                     isDel = true;
                     speed = 2500; 
                 } 
-                // Когда слово стерто полностью (до 0 символов)
                 else if (isDel && charIdx < 0) {
                     isDel = false;
                     charIdx = 0;
                     wordIdx = (wordIdx + 1) % words.length;
-                    speed = 500;
+                    speed = 400;
                 }
-
                 setTimeout(type, speed);
             }
             type();
@@ -237,7 +254,6 @@
         function validate() {
             const nextBtn = document.getElementById('btn-next');
             let valid = false;
-
             if (currentStep === 1) valid = true;
             else if (currentStep === 2) {
                 valid = document.getElementById('inp-model').value.length >= 3 && 
