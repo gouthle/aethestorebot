@@ -20,7 +20,7 @@ ADMIN_ID_RAW = os.getenv('ADMIN_ID', '0').strip()
 ADMIN_ID = int(ADMIN_ID_RAW) if ADMIN_ID_RAW.isdigit() else 0
 
 # Ссылка на твой Mini App (GitHub Pages)
-WEB_APP_URL = 'https://gouthle.github.io/aethestorebot/?v=2' 
+WEB_APP_URL = 'https://gouthle.github.io/aethestorebot/?v=2'
 
 # Порт для сервера (Render/Railway используют 10000 по умолчанию)
 PORT = int(os.getenv('PORT', 10000))
